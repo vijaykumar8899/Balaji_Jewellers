@@ -1,5 +1,6 @@
 //final_silver_screen
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
@@ -327,8 +328,7 @@ class _SilverScreenState extends State<SilverScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => CommonScreen(
-                                  title: categoriesForTitles[currentTabIndex]
-                                      [itemIndex],
+                                  title: titles[currentTabIndex],
                                   categories:
                                       categoriesForTitles[currentTabIndex],
                                   mainFolder: mainFolder,

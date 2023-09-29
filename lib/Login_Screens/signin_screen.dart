@@ -55,7 +55,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
         print('User data saved to SharedPreferences');
         Get.offAll(TabsScreen());
-        isLoading = false;
+        setState(() {
+          isLoading = false;
+        });
       } else {
         // If the phone number does not exist in the 'users' collection, return null
         print('User not found in Firestore');
@@ -67,7 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         );
-        isLoading = false;
+        setState(() {
+          isLoading = false;
+        });
       }
     } catch (e) {
       print('Error fetching user data: $e');
@@ -134,6 +138,9 @@ class _LoginScreenState extends State<LoginScreen> {
           ));
         }
       } else {
+        setState(() {
+          isLoading = false;
+        });
         print("Sending OTP failed");
         Get.showSnackbar(GetBar(
           message: "Sending OTP failed, Retry after some time",
@@ -181,23 +188,22 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Visibility(
-                visible: isLoading,
-                child: Center(
-                  child: SpinKitCircle(
-                    size: 120,
-                    itemBuilder: (context, index) {
-                      final colors = [Colors.orangeAccent, Colors.black];
-                      final color = colors[index % colors.length];
-
-                      return DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: color,
-                        ),
-                      );
-                    },
-                  ),
-                ),
+              Stack(
+                children: [
+                  if (isLoading)
+                    const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SpinKitThreeInOut(
+                            size: 60,
+                            color: Colors.orangeAccent,
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
               ),
               SizedBox(height: 70),
               Container(
@@ -271,9 +277,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               onPressed: () {
-                                isLoading = true;
+                                setState(() {
+                                  isLoading = true;
+                                });
                                 verifyOTP(
                                     _otpCtrl.text); // Pass verificationId here
+                                FocusScope.of(context).unfocus();
                                 print('_otpCtrl : $_otpCtrl');
                               },
                             ),

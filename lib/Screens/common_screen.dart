@@ -203,7 +203,7 @@ class _CommonScreenState extends State<CommonScreen>
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     DocumentReference docRef = firestore
-        .collection(widget.mainFolder)
+        .collection('${widget.mainFolder}_Calculation')
         .doc(widget.title)
         .collection(selectedCategory)
         .doc('numberOfDocuments');
@@ -219,7 +219,7 @@ class _CommonScreenState extends State<CommonScreen>
           currentCount = docSnapshot['numberOfDocuments'];
         } else {
           // If the document doesn't exist, create it with a count of 1
-          transaction.set(docRef, {'numberOfDocuments': 0});
+          transaction.set(docRef, {'numberOfDocuments': 1});
         }
       });
 
