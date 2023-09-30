@@ -20,8 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool showOTPField = false; // Initially hide OTP field
   String _verificationId = '';
   bool isLoading = false;
+  bool otpSent = false;
   //checking wether the user exist or not
-  Future<void> saveUserDataToSharedPreferences(String _userPhoneNumber) async {
+  Future<void> checkUserExistOrNot(String _userPhoneNumber) async {
     print('phoneNumber inside existing user check $_userPhoneNumber');
     try {
       final CollectionReference usersCollection =
@@ -97,6 +98,12 @@ class _LoginScreenState extends State<LoginScreen> {
         codeSent: (String verificationId, [int? forceResendingToken]) {
           // verifyOTP(verificationId);
           _verificationId = verificationId;
+          if (_verificationId.isNotEmpty) {
+            setState(() {
+              otpSent = true;
+              isLoading = false;
+            });
+          }
           print('verificationId : $verificationId');
           print('_verificationId : $_verificationId');
         },
@@ -129,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (userCredential.user != null) {
           // If OTP is verified successfully, navigate to the next screen
           // ignore: use_build_context_synchronously
-          await saveUserDataToSharedPreferences(PhoneNumber);
+          await checkUserExistOrNot(PhoneNumber);
         } else {
           print('Error verifying OTP');
           Get.showSnackbar(GetBar(
@@ -179,150 +186,166 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[300],
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(25),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Stack(
-                children: [
-                  if (isLoading)
-                    const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SpinKitThreeInOut(
-                            size: 60,
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.grey[300],
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(25),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 70),
+                Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: AssetImage("assets/images/logo.png"),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 50),
+                Card(
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  color: Colors.white,
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text(
+                          "Verification",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
                             color: Colors.orangeAccent,
+                            fontFamily: 'Roboto',
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        if (!showOTPField) ...[
+                          const Text(
+                            "We'll send you a one-time code to your phone number",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orangeAccent,
+                              fontFamily: 'Roboto',
+                            ),
                           ),
                         ],
-                      ),
+                        if (showOTPField) ...[
+                          const Text(
+                            "Enter OTP to register or Login",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orangeAccent,
+                              fontFamily: 'Roboto',
+                            ),
+                          ),
+                        ],
+                        SizedBox(height: 25),
+                        _buildTextFormField(
+                          labelText: "Enter Phone Number",
+                          prefixIcon: Icons.phone,
+                          keyboardType: TextInputType.phone,
+                          controller: _phoneNumberCtrl,
+                        ),
+
+                        // Phone number input end
+
+                        if (otpSent) ...[
+                          Column(
+                            children: [
+                              SizedBox(height: 15),
+                              _buildTextFormField(
+                                labelText: "OTP",
+                                prefixIcon: Icons.security,
+                                keyboardType: TextInputType.number,
+                                controller: _otpCtrl,
+                              ),
+                              SizedBox(height: 20),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.orangeAccent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                ),
+                                child: isLoading // Check the loading variable
+                                    ? CircularProgressIndicator() // Show loading indicator
+                                    : Text(
+                                        "Verify OTP",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                onPressed: () {
+                                  setState(() {
+                                    isLoading = true; // Set loading to true
+                                  });
+                                  verifyOTP(_otpCtrl.text);
+                                  FocusScope.of(context).unfocus();
+                                },
+                              ),
+                            ],
+                          ),
+                        ] else ...[
+                          Column(
+                            // Wrap the else block in a Column
+                            children: [
+                              SizedBox(height: 20),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.orangeAccent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                ),
+                                child: isLoading // Check the loading variable
+                                    ? CircularProgressIndicator() // Show loading indicator
+                                    : Text(
+                                        "Send OTP",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                onPressed: () {
+                                  setState(() {
+                                    isLoading = true; // Set loading to true
+                                  });
+                                  loginWithPhone();
+                                  setState(() {
+                                    showOTPField = true;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ]
+                      ],
                     ),
-                ],
-              ),
-              SizedBox(height: 70),
-              Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/logo.png"),
-                    fit: BoxFit.cover,
                   ),
                 ),
-              ),
-              SizedBox(height: 50),
-              Card(
-                elevation: 10,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                color: Colors.white,
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        "Welcome Back!",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orangeAccent,
-                          fontFamily: 'Roboto',
-                        ),
-                      ),
-                      SizedBox(height: 25),
-                      _buildTextFormField(
-                        labelText: "Phone Number",
-                        prefixIcon: Icons.phone,
-                        keyboardType: TextInputType.phone,
-                        controller: _phoneNumberCtrl,
-                      ),
-
-                      // Phone number input end
-
-                      if (showOTPField) // Show OTP field conditionally
-                        ...[
-                        Column(
-                          children: [
-                            SizedBox(height: 15),
-                            _buildTextFormField(
-                              labelText: "OTP",
-                              prefixIcon: Icons.security,
-                              keyboardType: TextInputType.number,
-                              controller: _otpCtrl,
-                            ),
-                            SizedBox(height: 15),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.orangeAccent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                padding: EdgeInsets.symmetric(vertical: 16),
-                              ),
-                              child: Text(
-                                "Verify OTP",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  isLoading = true;
-                                });
-                                verifyOTP(
-                                    _otpCtrl.text); // Pass verificationId here
-                                FocusScope.of(context).unfocus();
-                                print('_otpCtrl : $_otpCtrl');
-                              },
-                            ),
-                          ],
-                        ),
-                      ] else ...[
-                        Column(
-                          // Wrap the else block in a Column
-                          children: [
-                            SizedBox(height: 15),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.orangeAccent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                padding: EdgeInsets.symmetric(vertical: 16),
-                              ),
-                              child: Text(
-                                "Send OTP",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              onPressed: () {
-                                loginWithPhone();
-                                setState(() {
-                                  showOTPField = true;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ]
-                    ],
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

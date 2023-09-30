@@ -208,10 +208,11 @@ class _GemStonesScreenState extends State<GemStonesScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => CommonScreen(
-                                  title: categoriesForTitles[currentTabIndex]
-                                      [itemIndex],
-                                  categories:
-                                      categoriesForTitles[currentTabIndex],
+                                  title: titles[currentTabIndex],
+                                  categories: [
+                                    categoriesForTitles[currentTabIndex]
+                                        [itemIndex]
+                                  ],
                                   mainFolder: mainFolder,
                                 ),
                               ),

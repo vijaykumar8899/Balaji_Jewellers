@@ -329,8 +329,10 @@ class _SilverScreenState extends State<SilverScreen> {
                               MaterialPageRoute(
                                 builder: (context) => CommonScreen(
                                   title: titles[currentTabIndex],
-                                  categories:
-                                      categoriesForTitles[currentTabIndex],
+                                  categories: [
+                                    categoriesForTitles[currentTabIndex]
+                                        [itemIndex]
+                                  ],
                                   mainFolder: mainFolder,
                                 ),
                               ),

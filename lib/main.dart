@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:jewellery/Login_Screens/signin_screen.dart';
-import 'package:jewellery/Login_Screens/user_check.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jewellery/Login_Screens/userDetailsScreen.dart';
 import 'package:jewellery/Screens/home_screen.dart';
+import 'package:jewellery/Login_Screens/user_check.dart';
+import 'package:jewellery/Screens/tabs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,8 +38,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
-      title: "FlutterPhoneAuth",
+      home: LoginScreen(),
+      title: "Balaji Jewellers",
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
+import 'package:jewellery/Login_Screens/signin_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -23,6 +25,10 @@ class AuthService {
 
   // Sign the user out
   Future<void> signOut() async {
-    await _auth.signOut();
+    await _auth.signOut().then((res) {
+      Get.offAll(LoginScreen());
+    }).catchError((e) {
+      print(e);
+    });
   }
 }

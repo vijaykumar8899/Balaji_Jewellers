@@ -52,11 +52,7 @@ class _TabsScreenState extends State<TabsScreen>
             index: currentIndex,
             children: [
               HomeScreen(), // Displayed when currentIndex is 0
-              WishlistScreen(
-                title: 'Wishlist',
-                categories: ['Wishlist'],
-                mainFolder: 'Wishlist',
-              ), // Displayed when currentIndex is 1
+              WishlistScreen(), // Displayed when currentIndex is 1
             ],
           ),
           Positioned(

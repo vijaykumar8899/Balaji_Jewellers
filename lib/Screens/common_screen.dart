@@ -518,7 +518,7 @@ class _CommonScreenState extends State<CommonScreen>
       final firestore = FirebaseFirestore.instance;
       final collection = firestore
           .collection('Wishlist')
-          .doc("$userName+'_'$userPhoneNumber")
+          .doc("${userName}_$userPhoneNumber")
           .collection('Wishlist');
 
       final existingDoc = await collection
@@ -1025,7 +1025,7 @@ class _CommonScreenState extends State<CommonScreen>
           try {
             final querySnapshot = await FirebaseFirestore.instance
                 .collection('Wishlist')
-                .doc('Wishlist')
+                .doc("$userName+'_'$userPhoneNumber")
                 .collection('Wishlist')
                 .where('imageUrl', isEqualTo: imageUrl)
                 .get();

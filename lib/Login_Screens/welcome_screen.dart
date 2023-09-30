@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jewellery/Login_Screens/signup_screen.dart';
+import 'package:jewellery/Login_Screens/signin_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -88,7 +88,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => SignupScreen()),
+          MaterialPageRoute(builder: (_) => LoginScreen()),
         );
       }
     });

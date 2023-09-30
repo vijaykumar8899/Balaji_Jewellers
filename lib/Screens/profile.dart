@@ -1,7 +1,7 @@
+//ProfileScreen
+
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -10,7 +10,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  FirebaseAuth _auth = FirebaseAuth.instance;
   String? userPhoneNumber;
   String? userName;
   String? userCity;
@@ -28,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userPhoneNumber = prefs.getString('userPhoneNumber');
       userName = prefs.getString('userName');
       userEmail = prefs.getString('userEmail');
-      userCity = prefs.getString('city');
+      userCity = prefs.getString('userCity');
     });
   }
 
@@ -46,34 +45,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-        ),
+        backgroundColor: Colors.grey[300], // Change to grey[300]
+        elevation: 0,
         title: Center(
           child: Text(
-            "Profile",
-            style: TextStyle(
-              color: Colors.orangeAccent,
-              fontFamily: 'Playfair Display',
-              fontSize: 24,
-              letterSpacing: 1,
-              fontWeight: FontWeight.bold,
+            'Profile',
+            style: GoogleFonts.rowdies(
+              // Use your desired Google Font, e.g., 'lobster'
+              textStyle: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
+        leading: BackButton(
+          color: Colors.black,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         actions: [
-          // You can add additional icons or widgets here for added style and design.
           IconButton(
-            onPressed: () {
-              // Add your action here
-            },
             icon: Icon(
               Icons.settings,
               color: Colors.transparent,
             ),
+            onPressed: () {
+              // Show search bar and handle search
+            },
           ),
         ],
       ),
@@ -83,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // -- TOP CARD
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.30,
+              height: MediaQuery.of(context).size.height * 0.45,
               margin: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10.0),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -110,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   // Profile Image
                   Stack(
-                    alignment: Alignment.bottomRight,
+                    alignment: Alignment.topCenter,
                     children: [
                       Container(
                         width: 120,
@@ -130,71 +131,159 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                         child: CircleAvatar(
-                          backgroundImage:
-                              AssetImage('assets/profile_image.png'),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => UpdateProfileScreen()));
-                        },
-                        style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(), // Make the button circular
-                          padding: EdgeInsets.all(
-                              0), // Remove padding to make the button fit the circle
-                          primary: Colors.blue, // Set the background color
-                        ),
-                        child: Container(
-                          width: 35,
-                          height: 35,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color:
-                                Colors.blue, // Replace with your desired color
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
+                          backgroundImage: NetworkImage(
+                              'https://st2.depositphotos.com/7573446/12066/v/450/depositphotos_120663986-stock-illustration-people-web-vector-icon.jpg'),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 15),
-                  Text(
-                    userName ?? '',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  SizedBox(height: 20),
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.black38,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.black54, // Optional: border color
+                        width: 2, // Optional: border width
+                      ), // Curved borders
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      userName ?? '',
+                      style: GoogleFonts.dmSerifDisplay(
+                        // Use Google Fonts, you can replace 'lobster' with any font from Google Fonts
+                        textStyle: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 1.2,
+                          // You can add more text styles like shadows, decoration, etc. here
+                        ),
+                      ),
                     ),
                   ),
-                  Text(
-                    userPhoneNumber ?? '',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[300],
+                  SizedBox(height: 10),
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color:
+                          Colors.grey[300], // Set your desired background color
+                      borderRadius: BorderRadius.circular(
+                          10), // Optional: for rounded corners
+                      border: Border.all(
+                        color: Colors.black, // Optional: border color
+                        width: 2, // Optional: border width
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black
+                              .withOpacity(0.3), // Optional: shadow color
+                          spreadRadius: 2, // Optional: spread radius
+                          blurRadius: 5, // Optional: blur radius
+                          offset: Offset(0, 3), // Optional: shadow offset
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        userPhoneNumber ?? '',
+                        style: TextStyle(
+                          fontSize:
+                              16, // Adjust the font size for the phone number
+                          color: Colors.black, // Text color
+                          fontFamily:
+                              'Roboto', // Optional: specify your desired font family
+                          fontWeight:
+                              FontWeight.bold, // Optional: specify font weight
+                        ),
+                      ),
                     ),
                   ),
-                  Text(
-                    userEmail ?? '',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[300],
+                  SizedBox(height: 10),
+
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color:
+                          Colors.grey[300], // Set your desired background color
+                      borderRadius: BorderRadius.circular(
+                          10), // Optional: for rounded corners
+                      border: Border.all(
+                        color: Colors.black, // Optional: border color
+                        width: 2, // Optional: border width
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black
+                              .withOpacity(0.3), // Optional: shadow color
+                          spreadRadius: 2, // Optional: spread radius
+                          blurRadius: 5, // Optional: blur radius
+                          offset: Offset(0, 3), // Optional: shadow offset
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        userEmail ?? '',
+                        style: TextStyle(
+                          fontSize:
+                              16, // Adjust the font size for the phone number
+                          color: Colors.black, // Text color
+                          fontFamily:
+                              'Roboto', // Optional: specify your desired font family
+                          fontWeight:
+                              FontWeight.bold, // Optional: specify font weight
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color:
+                          Colors.grey[300], // Set your desired background color
+                      borderRadius: BorderRadius.circular(
+                          10), // Optional: for rounded corners
+                      border: Border.all(
+                        color: Colors.black, // Optional: border color
+                        width: 2, // Optional: border width
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black
+                              .withOpacity(0.3), // Optional: shadow color
+                          spreadRadius: 2, // Optional: spread radius
+                          blurRadius: 5, // Optional: blur radius
+                          offset: Offset(0, 3), // Optional: shadow offset
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        userCity ?? '',
+                        style: TextStyle(
+                          fontSize:
+                              16, // Adjust the font size for the phone number
+                          color: Colors.black, // Text color
+                          fontFamily:
+                              'Roboto', // Optional: specify your desired font family
+                          fontWeight:
+                              FontWeight.bold, // Optional: specify font weight
+                        ),
+                      ),
                     ),
                   ),
 
-                  Text(
-                    userCity ?? '',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[300],
-                    ),
-                  ),
                   // SizedBox(height: 30),
 
                   // Edit Profile Button
@@ -205,35 +294,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
 
             // -- LIST VIEW ITEMS (Each in a separate Card)
+
             Card(
               elevation: 5, // Add elevation for a card-like appearance
               margin: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10.0),
               child: ProfileMenuWidget(
-                  title: 'Settings', icon: Icons.settings, onPress: () {}),
+                  title: 'Help Center', icon: Icons.help, onPress: () {}),
             ),
             Card(
               elevation: 5, // Add elevation for a card-like appearance
               margin: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10.0),
               child: ProfileMenuWidget(
-                  title: 'Billing Details',
-                  icon: Icons.account_balance_wallet,
+                  title: 'Refer', icon: Icons.person_add, onPress: () {}),
+            ),
+            Card(
+              elevation: 5, // Add elevation for a card-like appearance
+              margin: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10.0),
+              child: ProfileMenuWidget(
+                  title: 'Developers',
+                  icon: Icons.developer_mode,
                   onPress: () {}),
-            ),
-            Card(
-              elevation: 5, // Add elevation for a card-like appearance
-              margin: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10.0),
-              child: ProfileMenuWidget(
-                  title: 'User Management',
-                  icon: Icons.person_add,
-                  onPress: () {}),
-            ),
-            const Divider(),
-            const SizedBox(height: 20),
-            Card(
-              elevation: 5, // Add elevation for a card-like appearance
-              margin: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10.0),
-              child: ProfileMenuWidget(
-                  title: 'Information', icon: Icons.info, onPress: () {}),
             ),
             Card(
               elevation: 5, // Add elevation for a card-like appearance
@@ -332,154 +412,6 @@ class ProfileMenuWidget extends StatelessWidget {
                   size: 18.0, color: Colors.grey),
             )
           : null,
-    );
-  }
-}
-
-class UpdateProfileScreen extends StatelessWidget {
-  const UpdateProfileScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back),
-        ),
-        title: Text(
-          'Edit Profile',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // -- IMAGE with ICON
-              Stack(
-                children: [
-                  SizedBox(
-                    width: 120,
-                    height: 120,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: const Image(
-                          image: AssetImage('assets/profile_image.png')),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.blue, // Replace with your desired color
-                      ),
-                      child: const Icon(
-                        Icons.camera_alt,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 50),
-
-              // -- Form Fields
-              Form(
-                child: Column(
-                  children: [
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Full Name',
-                        prefixIcon: Icon(Icons.person),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Phone Number',
-                        prefixIcon: Icon(Icons.phone),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: Icon(Icons.fingerprint),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.visibility_off),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // -- Form Submit Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          primary:
-                              Colors.blue, // Replace with your desired color
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: const Text('Save Changes',
-                            style: TextStyle(fontSize: 18)),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // -- Created Date and Delete Button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Joined 2 years ago', // Replace with your actual join date
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.redAccent.withOpacity(
-                                0.1), // Replace with your desired color
-                            elevation: 0,
-                            onPrimary: Colors.red,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: const Text('Delete Account',
-                              style: TextStyle(color: Colors.red)),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

@@ -1,9 +1,4 @@
-//final_wishlist_screen
-
-//final_Common_Screen
-
-//final_common_screen
-
+//whishlistScreen
 import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
@@ -20,114 +15,68 @@ import 'package:share/share.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cupertino_icons/cupertino_icons.dart';
 
 class WishlistScreen extends StatefulWidget {
-  // final String mainFolder = "Wishlist";
-  // final String title = "Wishlist";
-  // final List<String> categories = ["Wishlist"];
-
-  final String mainFolder;
-  final String title;
-  final List<String> categories;
-
-  const WishlistScreen(
-      {Key? key,
-      required this.title,
-      required this.categories,
-      required this.mainFolder})
-      : super(key: key);
-
   @override
   _WishlistScreenState createState() => _WishlistScreenState();
 }
 
 var logger = Logger();
 
-class _WishlistScreenState extends State<WishlistScreen>
-    with SingleTickerProviderStateMixin {
-  static String selectedCategory = '';
+class _WishlistScreenState extends State<WishlistScreen> {
   String generatedId = '';
   final firestore = FirebaseFirestore.instance;
-  late int selectedTabIndex; // Track the selected tab index
-  final storage = FirebaseStorage.instance;
-  Map<String, List<DocumentReference>> imageUrlsByCategory =
-      {}; // Store fetched image URLs
-
-  late TabController tabController; // Declare TabController
-  List<String> selectedImages = []; // Track selected images
-  bool isSelectionMode = false; //Track Multiple images select option
+  late TabController tabController;
+  List<String> selectedImages = [];
+  bool isSelectionMode = false;
   int currentCount = 0;
   double weight = 0;
   Map<String, dynamic> imageUrlCache = {};
+  List<DocumentReference> imageUrls = [];
   List<SelectedItem> selectedItems = [];
-
   String? userPhoneNumber;
   String? userName;
+  String wishlistUserCollectionDocName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImagesForCategory();
+    getUserDataFromSharedPreferences();
+  }
 
   Future<void> getUserDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       userPhoneNumber = prefs.getString('userPhoneNumber');
       userName = prefs.getString('userName');
+      wishlistUserCollectionDocName = "${userName}_$userPhoneNumber";
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    // selectedTabIndex = 0; // Initialize with the first tab
-    selectedCategory = 'Wishlist';
-    _loadImagesForCategory(selectedCategory);
-    tabController = TabController(
-      length: widget.categories.length,
-      vsync: this, // Provide the SingleTickerProviderStateMixin
-    );
-    tabController.addListener(_handleTabChange); // Listen to tab changes
-    getUserDataFromSharedPreferences();
+  Stream<QuerySnapshot> getWishlistImagesStream() {
+    return FirebaseFirestore.instance
+        .collection('Wishlist')
+        .doc(wishlistUserCollectionDocName)
+        .collection('Wishlist')
+        .snapshots(); // Listen to changes in the collection
   }
 
-  void _loadImagesForCategory(String category) async {
-    try {
-      final QuerySnapshot categoryQuery = await FirebaseFirestore.instance
-          .collection(widget.mainFolder)
-          .doc(widget.title)
-          .collection(selectedCategory)
-          .get();
+  void _loadImagesForCategory() {
+    final stream = getWishlistImagesStream();
 
-      final List<DocumentReference> refs = categoryQuery.docs
+    stream.listen((QuerySnapshot querySnapshot) {
+      // This code will be executed whenever there's a change in the Firestore collection.
+      final List<DocumentReference> refs = querySnapshot.docs
           .map((doc) => doc.reference)
           .where((ref) => ref != null)
           .toList();
 
       setState(() {
-        imageUrlsByCategory[category] = refs.cast<DocumentReference>();
-        print("START");
-        print(imageUrlCache);
-        print("FINISH ");
+        imageUrls = refs;
       });
-    } catch (e) {
-      logger.e('Error fetching images', e);
-    }
-  }
-
-  void _handleTabChange() {
-    setState(() {
-      selectedCategory =
-          widget.categories[tabController.index]; // Update selected category
-      print(selectedCategory);
     });
-
-    if (!imageUrlsByCategory.containsKey(selectedCategory)) {
-      _loadImagesForCategory(selectedCategory);
-    }
-  }
-
-  @override
-  void dispose() {
-    tabController.dispose(); // Dispose of the TabController
-    super.dispose();
   }
 
   void _showImagePopup(
@@ -230,36 +179,6 @@ class _WishlistScreenState extends State<WishlistScreen>
     return ''; // Return an empty string if there's an error
   }
 
-  Future<List<String>> _fetchImageUrlsFromFirestore(
-      double numberOfImages) async {
-    final List<String> imageUrls = [];
-
-    try {
-      final folderName =
-          '${widget.mainFolder}/${widget.title}/$selectedCategory';
-      final collectionRef = firestore
-          .collection(widget.mainFolder)
-          .doc(widget.title)
-          .collection(selectedCategory);
-
-      final querySnapshot = await collectionRef
-          .orderBy('TimeStamp', descending: true)
-          .limit(numberOfImages.toInt())
-          .get();
-
-      for (final docSnapshot in querySnapshot.docs) {
-        final imageUrl = docSnapshot.get('imageUrl') as String;
-        imageUrls.add(imageUrl);
-      }
-    } catch (e) {
-      // Handle any errors that occur during Firestore access.
-      // You can show an error message or take other appropriate actions.
-      print('Error fetching images from Firestore: $e');
-    }
-
-    return imageUrls;
-  }
-
   Future<void> _shareImages(List<String> imageUrls) async {
     final List<String> imageFiles = [];
 
@@ -276,7 +195,7 @@ class _WishlistScreenState extends State<WishlistScreen>
       final firestore = FirebaseFirestore.instance;
       final collection = firestore
           .collection('Wishlist')
-          .doc("$userName+'_'$userPhoneNumber")
+          .doc(wishlistUserCollectionDocName)
           .collection('Wishlist');
 
       final existingDoc = await collection
@@ -299,28 +218,15 @@ class _WishlistScreenState extends State<WishlistScreen>
     }
   }
 
-  Future<int> _countImagesInCategory(String category) async {
-    // Count the number of images in the specified category
-    final imageUrls = imageUrlsByCategory[category];
-    return imageUrls?.length ?? 0;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: widget.categories.length,
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.grey[300],
+      appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        appBar: AppBar(
-          leading: BackButton(
-            color: Colors.black,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          backgroundColor: Colors.grey[300],
-          title: Text(
-            "$selectedCategory", // Display only the selectedCategory
+        title: Center(
+          child: Text(
+            "Wishlist",
             style: GoogleFonts.rowdies(
               textStyle: const TextStyle(
                 color: Colors.black,
@@ -329,74 +235,17 @@ class _WishlistScreenState extends State<WishlistScreen>
               ),
             ),
           ),
-          actions: [
-            if (isSelectionMode)
-              IconButton(
-                onPressed: () {
-                  // Handle the Share action here
-                  _shareSelectedImages();
-                },
-                icon: const Icon(
-                  Icons.share,
-                  color: Colors.blue,
-                  size: 30,
-                ),
-              ),
-          ],
-          elevation: 0,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 14),
-                height: 45,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-                child: TabBar(
-                  controller: tabController,
-                  indicator: BoxDecoration(
-                    color: Colors.green[300],
-                    borderRadius: BorderRadius.circular(25.0),
-                  ),
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.black,
-                  tabs: widget.categories.map((category) {
-                    return FutureBuilder<int>(
-                      future: _countImagesInCategory(category),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Tab(text: "$category Loading...");
-                        } else if (snapshot.hasError) {
-                          return Tab(text: "$category Error");
-                        } else {
-                          final count = snapshot.data ?? 0;
-                          return Tab(text: "$category $count");
-                        }
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Expanded(
-                child: TabBarView(
-                  controller: tabController,
-                  children: widget.categories.map((category) {
-                    final imageUrls = imageUrlsByCategory[category] ?? [];
-                    return buildGridView(
-                        imageUrls); // Return the result of buildGridView
-                  }).toList(), // Convert the mapped results to a list
-                ),
-              ),
-            ],
-          ),
+        elevation: 0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: buildGridView(imageUrls),
+            ),
+          ],
         ),
       ),
     );
@@ -418,18 +267,16 @@ class _WishlistScreenState extends State<WishlistScreen>
           future: _getImageUrlFromReference(documentReference),
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              // While fetching the URL, show the shimmer effect.
               return Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
                 child: Container(
                   width: double.infinity,
-                  height: 200, // Adjust the height as needed
+                  height: 200,
                   color: Colors.white,
                 ),
               );
             } else if (snapshot.hasError) {
-              // Handle the error case if fetching the URL fails.
               return const Text('Error loading image');
             } else {
               final data = snapshot.data;
@@ -437,10 +284,7 @@ class _WishlistScreenState extends State<WishlistScreen>
               final id = data?['id'];
               final weight = data?['weight'];
               final isSelected = selectedImages.contains(imageUrl);
-              // Custom widget implementation here instead of GridItem
               return Container(
-                // padding: EdgeInsets.all(10.0),
-                // margin: EdgeInsets.all(10.0),
                 child: Card(
                   elevation: 4,
                   shape: RoundedRectangleBorder(
@@ -454,9 +298,7 @@ class _WishlistScreenState extends State<WishlistScreen>
                             selectedImages.add(imageUrl!);
                           } else {
                             selectedImages.remove(imageUrl);
-                            print("slectedImages : $selectedImages");
                             if (selectedImages.isEmpty) {
-                              print("slectedImages : $selectedImages");
                               isSelectionMode = false;
                             }
                           }
@@ -506,7 +348,7 @@ class _WishlistScreenState extends State<WishlistScreen>
                                   ),
                                 ),
                               ),
-                              if (isSelected) // This if condition is now inside the Stack
+                              if (isSelected)
                                 const Positioned(
                                   top: 8,
                                   right: 8,
@@ -571,52 +413,10 @@ class _WishlistScreenState extends State<WishlistScreen>
     );
   }
 
-  void showDeleteConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Selected Items?'),
-          content:
-              const Text('Are you sure you want to delete the selected items?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Implement delete logic here
-                for (var item in selectedItems) {
-                  // Delete the selected items from your data source
-                  // imageUrls.remove(item.imageUrls);
-                }
-                // Clear the selected items list
-                selectedItems.clear();
-              },
-              child: const Text('Delete'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void shareSelectedItems() {
-    // Implement sharing logic here
-    final List<String> selectedimageUrls =
-        selectedItems.map((item) => item.imageUrls).toList();
-    // Implement the logic to share selectedimageUrls with other apps (e.g., WhatsApp).
-  }
-
   Future<Map<String, dynamic>> _getImageUrlFromReference(
       DocumentReference reference) async {
     final String refPath = reference.path;
 
-    // Check if the image URL is already cached
     if (imageUrlCache.containsKey(refPath)) {
       return imageUrlCache[refPath];
     }
@@ -629,13 +429,12 @@ class _WishlistScreenState extends State<WishlistScreen>
         if (data.isNotEmpty && data.containsKey('imageUrl')) {
           final imageUrl = data['imageUrl'] as String;
           final Id = data['id'] as String;
-          final weight = data['weight'] as String; // Cast to String if needed
+          final weight = data['weight'] as String;
 
-          // Store the fetched image URL in the cache
           imageUrlCache[refPath] = {
             'imageUrl': imageUrl,
             'id': Id,
-            'weight': weight, // Convert to String if needed
+            'weight': weight,
           };
 
           return imageUrlCache[refPath];
@@ -645,7 +444,7 @@ class _WishlistScreenState extends State<WishlistScreen>
       print('Error fetching image URL: $e');
     }
 
-    return {}; // Return an empty map or handle the error case accordingly
+    return {};
   }
 }
 

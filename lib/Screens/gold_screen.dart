@@ -1,3 +1,5 @@
+//GoldScreen Final
+
 //Gold_screen->Tharun->ListViewChanges 2
 
 import 'package:flutter/material.dart';
@@ -21,25 +23,27 @@ class _GoldScreenState extends State<GoldScreen> {
   final String mainFolder = 'Gold';
 
   final List<String> titles = [
-    'Rings',
-    'Chains',
+    'Ladies Rings',
+    'Gents Rings',
     'Necklace',
+    'Chains',
     'Harams',
+    'Bangles',
+    'Chowker Lockets',
+    'Chain Lockets',
     'Vadranam',
     'Aravanki',
     'Bracelets',
     'Kadiyalu',
-    'Black Beats',
+    'Nallapursalu',
     'DD Balls Chains',
+    'Black Beats',
+    'Jukalu',
     'Buttalu',
-    'Jukkalu',
     'Diddulu',
-    'Bangles',
-    'Chowker Lockets',
-    'Chain Lockets',
     'Chandh Bali',
     'Saniya Rings',
-    'Maatilu',
+    'Matilu',
     'Champaswaralu',
     'Chevi Chutlu',
     'Chandra Haralu',
@@ -162,6 +166,7 @@ class _GoldScreenState extends State<GoldScreen> {
               elevation: 5,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16.0),
+                side: BorderSide(color: Colors.orangeAccent, width: 1.0),
               ),
               child: InkWell(
                 onTap: () {
@@ -199,7 +204,7 @@ class _GoldScreenState extends State<GoldScreen> {
                           borderRadius: BorderRadius.circular(16.0),
                           image: DecorationImage(
                             image: AssetImage(
-                                'assets/images/photosB${index + 1}.png'),
+                                'assets/images/Gold${index + 1}.png'),
                             fit: BoxFit.contain,
                           ),
                           border: Border.all(
@@ -226,7 +231,10 @@ class _GoldScreenState extends State<GoldScreen> {
                           ],
                         ),
                       ),
-                      const Icon(Icons.double_arrow),
+                      const Icon(
+                        Icons.double_arrow,
+                        color: Colors.orangeAccent,
+                      ),
                       const SizedBox(width: 10),
                     ],
                   ),

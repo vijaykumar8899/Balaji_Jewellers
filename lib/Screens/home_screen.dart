@@ -1,9 +1,9 @@
+//HOMESCREEN FINAL
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jewellery/Screens/Search.dart';
-
 import 'package:jewellery/Screens/diamonds_screen.dart';
 import 'package:jewellery/Screens/profile.dart';
 import 'gemstones_screen.dart';
@@ -29,6 +29,28 @@ class _HomeScreenState extends State<HomeScreen> {
     'assets/images/poster8.jpg',
   ];
 
+  final FocusNode _focusNode = FocusNode();
+
+  void _showUnderDevelopmentMessage() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Under Development"),
+          content: Text("This feature is currently under development."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,35 +60,27 @@ class _HomeScreenState extends State<HomeScreen> {
         leadingWidth: 0,
         automaticallyImplyLeading: false,
         elevation: 0,
-        toolbarHeight: 60,
+        toolbarHeight: 70,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.all(0),
               child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.orangeAccent,
-                    width: 1.0,
-                  ),
-                  color: Colors.black,
-                ),
-                child: Center(
-                  child: Image.asset(
-                    'assets/images/logo9.png',
-                    width: 40,
-                    height: 40,
-                  ),
+                width: 50,
+                height: 50,
+                child: Image.asset(
+                  'assets/images/logo9.png',
+                  width: 42,
+                  height: 42,
                 ),
               ),
             ),
-            SizedBox(width: 10),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.045,
+            ), // Adjust the multiplier as needed
             Text(
-              "Sri Balaji Jewelers",
+              "SriBalajiJewelers",
               style: GoogleFonts.mateSc(
                 fontSize: 25,
                 fontWeight: FontWeight.w900,
@@ -85,7 +99,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 30.0)),
               ),
             ),
-            SizedBox(width: 10),
+            SizedBox(
+                width: MediaQuery.of(context).size.width *
+                    0.045), // Adjust the multiplier as needed
             Card(
               elevation: 5,
               shape: RoundedRectangleBorder(
@@ -101,10 +117,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.all(3),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      'assets/images/home5.jpg',
-                      width: 41,
-                      height: 41,
+                    child: Image.network(
+                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKfHVThC6NDvAo7W_aBedFmduYaNv6oXl-5T0lykgFHRoznpF85SfTb5c17nw9LqJVY94&usqp=CAU',
+                      width: MediaQuery.of(context).size.width *
+                          0.08, // Adjust this value as needed
+                      height: MediaQuery.of(context).size.width *
+                          0.08, // Adjust this value as needed
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -137,6 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       child: TextField(
                         onTap: () {
+                          _focusNode.unfocus();
                           Get.to(SearchScreen());
                         },
                         style: TextStyle(fontSize: 16, color: Colors.grey[600]),
@@ -145,15 +164,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.only(left: 20),
                         ),
+                        focusNode: _focusNode,
                       ),
                     ),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        _showUnderDevelopmentMessage();
+                      },
                       icon: Icon(Icons.mic),
                       color: Colors.black87,
                     ),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        _showUnderDevelopmentMessage();
+                      },
                       icon: Icon(Icons.settings),
                       color: Colors.black87,
                     ),
@@ -163,13 +187,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(height: 25),
             CustomCarouselSlider(images: images),
-            SizedBox(height: 20),
-            Expanded(
+            SizedBox(height: 25),
+            Container(
+              height: 335,
               child: GridView.count(
                 crossAxisCount: 3,
-                mainAxisSpacing: 9,
-                crossAxisSpacing: 9,
-                childAspectRatio: (160 / 220),
+                mainAxisSpacing: 14,
+                crossAxisSpacing: 14,
+                childAspectRatio: (200 / 274),
                 children: <Widget>[
                   CategoryCard(
                     image: "assets/images/rk1.6.png",
@@ -208,9 +233,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   ExtraCategoryCard(
                     image1:
-                        "https://www.itgeared.com/wp-content/uploads/how-to-maintain-photo-quality-in-whatsapp-status.jpg", // Replace with your first image URL
+                        "https://logowik.com/content/uploads/images/297_whatsapp504.jpg",
                     image2:
-                        "https://images.unsplash.com/photo-1662947852092-417aa4cd699b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZmFjZWJvb2slMjBsb2dvJTIwM2R8ZW58MHx8MHx8fDA%3D&w=1000&q=80", // Replace with your second image URL
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpbUffaI6NuBLZZx2ubInOAeGr_zbsJ6kMNJ41xNBUKVNUM9WimFjKZIPTFCoj4DD7258&usqp=CAU",
                     onTapImage1: () {
                       final whatsappLink =
                           'https://wa.me/919247879511?text=Hi%20Balaji%20Jewellers';
@@ -250,7 +275,7 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
       children: [
         CarouselSlider(
           options: CarouselOptions(
-            height: 220.0,
+            height: MediaQuery.of(context).size.width * 0.48,
             enlargeCenterPage: true,
             autoPlay: true,
             aspectRatio: 4 / 3,
@@ -269,7 +294,7 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
               builder: (BuildContext context) {
                 return Container(
                   width: double.infinity,
-                  height: 200,
+                  height: MediaQuery.of(context).size.width * 0.75,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
                     gradient: LinearGradient(
@@ -439,53 +464,62 @@ class ExtraCategoryCard extends StatelessWidget {
         // Handle onTap for the entire card, if needed
       },
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.01),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: onTapImage1,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.01),
-                      spreadRadius: 2,
-                      blurRadius: 10,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                  color: Colors.black,
+            Container(
+              height: 64,
+              child: Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(11),
                 ),
-                //padding: EdgeInsets.all(5),
-                child: Image.network(image1, fit: BoxFit.cover
-                    //color: Colors.black87,
+                child: GestureDetector(
+                  onTap: onTapImage1,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(11),
+                    child: Image.network(
+                      image1,
+                      height: 64,
+                      fit: BoxFit.cover,
                     ),
+                  ),
+                ),
               ),
             ),
             Container(
-              height: 7,
+              height: 8,
               color: Colors.grey[300],
             ),
-            GestureDetector(
-              onTap: onTapImage2,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.01),
-                      spreadRadius: 2,
-                      blurRadius: 10,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                  color: Colors.black,
+            Container(
+              height: 64,
+              child: Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(11),
                 ),
-                //padding: EdgeInsets.all(5),
-                child: Image.network(image2, fit: BoxFit.cover
-                    //color: Colors.black87,
+                child: GestureDetector(
+                  onTap: onTapImage2,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(11),
+                    child: Image.network(
+                      image2,
+                      height: 64,
+                      fit: BoxFit.cover,
                     ),
+                  ),
+                ),
               ),
             ),
           ],

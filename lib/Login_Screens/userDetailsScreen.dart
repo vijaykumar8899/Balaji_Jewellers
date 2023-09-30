@@ -1,8 +1,8 @@
+// UserDetailsScreen
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:jewellery/Screens/home_screen.dart';
 import 'package:jewellery/Screens/tabs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,8 +44,14 @@ class _userDetailsScreenState extends State<userDetailsScreen> {
       await prefs.setString('userPhoneNumber', widget.userPhoneNumber_);
 
       print('User data saved to Firestore and SharedPreferences');
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
       print('Error saving user data: $e');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -53,137 +59,128 @@ class _userDetailsScreenState extends State<userDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.all(25),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 70),
-                  Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: AssetImage("assets/images/logo.png"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(25),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 70),
+              Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/logo.png"),
+                    fit: BoxFit.cover,
                   ),
-                  SizedBox(height: 50),
-                  Card(
-                    elevation: 10,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    color: Colors.white,
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            "Let us know about you more!",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.orangeAccent,
-                              fontFamily: 'Roboto',
-                            ),
-                          ),
-                          SizedBox(height: 25),
-                          _buildTextFormField(
-                            labelText: "Full Name",
-                            prefixIcon: Icons.phone,
-                            keyboardType: TextInputType.name,
-                            controller: _userNameCtrl,
-                          ),
-                          //fill name field end
-
-                          SizedBox(height: 25),
-                          _buildTextFormField(
-                            labelText: "Email",
-                            prefixIcon: Icons.phone,
-                            keyboardType: TextInputType.emailAddress,
-                            controller: _userEmailCtrl,
-                          ),
-                          //email field end
-
-                          SizedBox(height: 25),
-                          _buildTextFormField(
-                            labelText: "City",
-                            prefixIcon: Icons.phone,
-                            keyboardType: TextInputType.name,
-                            controller: _userCityCtrl,
-                          ),
-                          //city field end
-                          SizedBox(
-                            height: 20,
-                          ),
-                          //save new user details to firestore button start
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.orangeAccent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                            ),
-                            child: Text(
-                              "Getting Started",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                              ),
-                            ),
-                            onPressed: () async {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              await saveUserDataToFirestoreAndSharedPreferences();
-                              setState(() {
-                                isLoading = false;
-                              });
-                              Get.offAll(TabsScreen());
-                            },
-                          ),
-                          //save new user details to firestore button end
-
-                          SizedBox(
-                            height: 30,
-                          ),
-                        ],
+                ),
+              ),
+              SizedBox(height: 50),
+              Card(
+                elevation: 10,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                color: Colors.white,
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        "Register",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orangeAccent,
+                          fontFamily: 'Roboto',
+                        ),
                       ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: isLoading,
-                    child: Center(
-                      child: SpinKitCircle(
-                        size: 120,
-                        itemBuilder: (context, index) {
-                          final colors = [Colors.orangeAccent, Colors.black];
-                          final color = colors[index % colors.length];
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "Tell us more about yourself !",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontFamily: 'Roboto',
+                        ),
+                      ),
+                      SizedBox(height: 25),
+                      _buildTextFormField(
+                        labelText: "Full Name",
+                        prefixIcon: Icons.account_circle,
+                        keyboardType: TextInputType.name,
+                        controller: _userNameCtrl,
+                      ),
+                      //fill name field end
 
-                          return DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: color,
-                            ),
-                          );
+                      SizedBox(height: 25),
+                      _buildTextFormField(
+                        labelText: "Email",
+                        prefixIcon: Icons.mail_rounded,
+                        keyboardType: TextInputType.emailAddress,
+                        controller: _userEmailCtrl,
+                      ),
+                      //email field end
+
+                      SizedBox(height: 25),
+                      _buildTextFormField(
+                        labelText: "City",
+                        prefixIcon: Icons.location_city_rounded,
+                        keyboardType: TextInputType.name,
+                        controller: _userCityCtrl,
+                      ),
+                      //city field end
+                      SizedBox(
+                        height: 20,
+                      ),
+                      //save new user details to firestore button start
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.orangeAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        child: isLoading
+                            ? CircularProgressIndicator() // Show loading indicator
+                            : Text(
+                                "Getting Started",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                ),
+                              ),
+                        onPressed: () async {
+                          setState(() {
+                            isLoading = true; // Set loading to true
+                          });
+                          await saveUserDataToFirestoreAndSharedPreferences();
+                          Get.offAll(TabsScreen());
                         },
                       ),
-                    ),
+
+                      //save new user details to firestore button end
+
+                      SizedBox(
+                        height: 30,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
