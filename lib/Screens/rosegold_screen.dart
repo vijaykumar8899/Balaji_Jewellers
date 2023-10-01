@@ -1,3 +1,5 @@
+//ROSEGOLD FINAL
+
 //Gold_screen->Tharun->ListViewChanges 2
 
 import 'package:flutter/material.dart';
@@ -23,25 +25,27 @@ class _RoseGoldScreenState extends State<RoseGoldScreen> {
   final String mainFolder = 'RoseGold';
 
   final List<String> titles = [
-    'Rings',
-    'Chains',
+    'Ladies Rings',
+    'Gents Rings',
     'Necklace',
+    'Chains',
     'Harams',
+    'Bangles',
+    'Chowker Lockets',
+    'Chain Lockets',
     'Vadranam',
     'Aravanki',
     'Bracelets',
     'Kadiyalu',
-    'Black Beats',
+    'Nallapursalu',
     'DD Balls Chains',
+    'Black Beats',
+    'Jukalu',
     'Buttalu',
-    'Jukkalu',
     'Diddulu',
-    'Bangles',
-    'Chowker Lockets',
-    'Chain Lockets',
     'Chandh Bali',
     'Saniya Rings',
-    'Maatilu',
+    'Matilu',
     'Champaswaralu',
     'Chevi Chutlu',
     'Chandra Haralu',
@@ -164,6 +168,7 @@ class _RoseGoldScreenState extends State<RoseGoldScreen> {
               elevation: 5,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16.0),
+                side: BorderSide(color: Colors.pinkAccent, width: 1.0),
               ),
               child: InkWell(
                 onTap: () {
@@ -201,7 +206,7 @@ class _RoseGoldScreenState extends State<RoseGoldScreen> {
                           borderRadius: BorderRadius.circular(16.0),
                           image: DecorationImage(
                             image: AssetImage(
-                                'assets/images/photosB${index + 1}.png'),
+                                'assets/images/RoseGold${index + 1}.png'),
                             fit: BoxFit.contain,
                           ),
                           border: Border.all(
@@ -228,7 +233,10 @@ class _RoseGoldScreenState extends State<RoseGoldScreen> {
                           ],
                         ),
                       ),
-                      const Icon(Icons.double_arrow),
+                      const Icon(
+                        Icons.double_arrow,
+                        color: Colors.pink,
+                      ),
                       const SizedBox(width: 10),
                     ],
                   ),

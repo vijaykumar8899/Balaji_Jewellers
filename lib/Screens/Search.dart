@@ -38,6 +38,69 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
+  //displaying image
+  void _showImagePopup(
+      BuildContext context, String imageUrl, String id, String weight) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            height: 400,
+            width: 400,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5.0),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 10.0,
+                ),
+              ],
+            ),
+            child: Stack(
+              children: [
+                PhotoView(
+                  imageProvider: NetworkImage(imageUrl),
+                  backgroundDecoration: const BoxDecoration(
+                    color: Colors.transparent,
+                  ),
+                  minScale: PhotoViewComputedScale.contained,
+                  maxScale: PhotoViewComputedScale.covered * 2,
+                ),
+                Positioned(
+                  top: 10, // Adjust the top position as needed
+                  left: 10, // Adjust the left position as needed
+                  child: Text(
+                    "Id: $id",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 40, // Adjust the top position as needed
+                  left: 10, // Adjust the left position as needed
+                  child: Text(
+                    "Weight: $weight",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+  //end
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,92 +256,13 @@ class _SearchScreenState extends State<SearchScreen> {
                       return ListTile(
                         title: Text(doc['ImageName']),
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ImagePopup(
-                                imageUrl: doc['imageUrl'],
-                                id: doc['id'],
-                                weight: doc['Weight'].toString(),
-                                context: context,
-                              ),
-                            ),
-                          );
+                          _showImagePopup(context, doc['imageUrl'], doc['id'],
+                              doc['Weight'].toString());
                         },
                       );
                     },
                   );
                 },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ImagePopup extends StatelessWidget {
-  final String imageUrl;
-  final String id;
-  final String weight;
-  final BuildContext context; // Add context as a parameter
-
-  ImagePopup({
-    required this.imageUrl,
-    required this.id,
-    required this.weight,
-    required this.context, // Add context as a parameter
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: Container(
-        height: 400,
-        width: 400,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5.0),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black,
-              blurRadius: 10.0,
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            PhotoView(
-              imageProvider: NetworkImage(imageUrl),
-              backgroundDecoration: const BoxDecoration(
-                color: Colors.transparent,
-              ),
-              minScale: PhotoViewComputedScale.contained,
-              maxScale: PhotoViewComputedScale.covered * 2,
-            ),
-            Positioned(
-              top: 10, // Adjust the top position as needed
-              left: 10, // Adjust the left position as needed
-              child: Text(
-                "Id: $id",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            Positioned(
-              top: 40, // Adjust the top position as needed
-              left: 10, // Adjust the left position as needed
-              child: Text(
-                "Weight: $weight",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
               ),
             ),
           ],

@@ -1,3 +1,5 @@
+//GEMSTONE SCREEN
+
 //final_silver_screen
 
 import 'package:flutter/material.dart';
@@ -41,22 +43,40 @@ class _GemStonesScreenState extends State<GemStonesScreen> {
       'Rudrakshalu',
       'Spatikalu',
       'Semi Freshes',
+      'Rudrakshalu',
+      'Spatikalu',
+      'Semi Freshes',
+      'Rudrakshalu',
+      'Spatikalu',
+      'Semi Freshes',
     ],
   ];
 
   final Map<String, String> itemImages = {
-    'Kempu': 'gemstones KEMPU.PNG',
-    'Diamond': 'gemstones diamond.jpg',
-    'Blue Safare': 'gemstone bluesafare.jpg',
-    'Yellow Safare': 'gemstones yellowsafare.PNG',
-    'Hessonite': 'gemstone hessonite.jpg',
-    'Cats Eye': 'gemstone catseye.jpg',
-    'Paral': 'gemstone paral.PNG',
-    'Koral': 'gemstone koral.jpg',
-    'Emerold': 'gemstone emerold.PNG',
-    'Rudrakshalu': 'gemstone rudhraksha.jpg',
-    'Spatikalu': 'gemstone spatikalu.PNG',
-    'Semi Freshes': 'gemstone semifreshes.jpg',
+    'Kempu':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone1.png?alt=media&token=1b54649e-f7fd-4885-bcf8-9960b8fddd4c&_gl=1*14e0xh*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTMzNjI5LjYwLjAuMA..',
+    'Diamond':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone2.png?alt=media&token=4e25fe07-04c6-4b82-8877-720a86ba23ad&_gl=1*1ai8rum*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MDM1LjU0LjAuMA..',
+    'Blue Safare':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone3.png?alt=media&token=af0e306e-1ab8-4700-93ff-00dc3106aef1&_gl=1*6o7xkr*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MDUyLjM3LjAuMA..',
+    'Yellow Safare':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone4.png?alt=media&token=2676ce78-7644-4243-b149-64e1369d1913&_gl=1*xqzd2n*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MDY2LjIzLjAuMA..',
+    'Hessonite':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone5.png?alt=media&token=c51ddab1-0461-4bf0-add8-930847ad58ba&_gl=1*1thp34p*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MDc1LjE0LjAuMA..',
+    'Cats Eye':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone6.png?alt=media&token=fa727cdc-256b-4f91-ab2b-12f08c169e54&_gl=1*ogzg52*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MDg1LjQuMC4w',
+    'Paral':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone7.png?alt=media&token=5faf6895-2797-49a6-878b-f0993f525fd9&_gl=1*1rt8095*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MDk2LjYwLjAuMA..',
+    'Koral':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone8.png?alt=media&token=f32027aa-70c7-476e-be45-68f4e2114b91&_gl=1*zrwtdh*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MTA3LjQ5LjAuMA..',
+    'Emerold':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone9.png?alt=media&token=fdc4f9d5-4f8e-4b97-8c68-331fa45f389d&_gl=1*1e4wl2i*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MTE2LjQwLjAuMA..',
+    'Rudrakshalu':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone10.png?alt=media&token=1ee1b01e-51aa-4e2c-a445-8d6028968d08&_gl=1*1tc9lip*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MTI5LjI3LjAuMA..',
+    'Spatikalu':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone11.png?alt=media&token=37228536-e69b-44a7-b066-15b17cabf7fa&_gl=1*1pqh53q*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MTU4LjYwLjAuMA..',
+    'Semi Freshes':
+        'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/WelcomeImages%2Fgemstones_images%2FGemstone12.png?alt=media&token=d9145fb8-9242-440d-9670-3793795923f8&_gl=1*1fizto5*_ga*MTQ0Njc1NzE2Ny4xNjkxNzU3NDc1*_ga_CW55HF8NVT*MTY5NjEzMzQxMS4xMzQuMS4xNjk2MTM0MjE3LjEuMC4w',
   };
 
   @override
@@ -201,6 +221,7 @@ class _GemStonesScreenState extends State<GemStonesScreen> {
                         elevation: 5,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16.0),
+                          side: BorderSide(color: Colors.red, width: 1.0),
                         ),
                         child: InkWell(
                           onTap: () {
@@ -208,11 +229,10 @@ class _GemStonesScreenState extends State<GemStonesScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => CommonScreen(
-                                  title: titles[currentTabIndex],
-                                  categories: [
-                                    categoriesForTitles[currentTabIndex]
-                                        [itemIndex]
-                                  ],
+                                  title: categoriesForTitles[currentTabIndex]
+                                      [itemIndex],
+                                  categories:
+                                      categoriesForTitles[currentTabIndex],
                                   mainFolder: mainFolder,
                                 ),
                               ),
@@ -230,8 +250,10 @@ class _GemStonesScreenState extends State<GemStonesScreen> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16.0),
                                     image: DecorationImage(
-                                      image: AssetImage(
-                                        'assets/images/${itemImages[currentTabIndex]?[itemIndex]}',
+                                      image: NetworkImage(
+                                        itemImages[
+                                            categoriesForTitles[currentTabIndex]
+                                                [itemIndex]]!,
                                       ),
                                       fit: BoxFit.contain,
                                     ),
@@ -259,7 +281,10 @@ class _GemStonesScreenState extends State<GemStonesScreen> {
                                     ],
                                   ),
                                 ),
-                                const Icon(Icons.double_arrow),
+                                const Icon(
+                                  Icons.double_arrow,
+                                  color: Colors.blueGrey,
+                                ),
                                 const SizedBox(width: 10),
                               ],
                             ),

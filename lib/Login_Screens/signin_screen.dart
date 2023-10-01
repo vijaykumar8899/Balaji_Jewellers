@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:jewellery/Login_Screens/userDetailsScreen.dart';
 import 'package:jewellery/Screens/tabs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -143,6 +142,9 @@ class _LoginScreenState extends State<LoginScreen> {
             message: 'Incorrect OTP',
             duration: Duration(seconds: 2),
           ));
+          setState(() {
+            isLoading = false;
+          });
         }
       } else {
         setState(() {
@@ -238,9 +240,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             "We'll send you a one-time code to your phone number",
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
-                              color: Colors.orangeAccent,
+                              color: Colors.black,
                               fontFamily: 'Roboto',
                             ),
                           ),
@@ -250,9 +252,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             "Enter OTP to register or Login",
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
-                              color: Colors.orangeAccent,
+                              color: Colors.black,
                               fontFamily: 'Roboto',
                             ),
                           ),
@@ -336,6 +338,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     showOTPField = true;
                                   });
                                 },
+                              ),
+                              SizedBox(
+                                height: 20,
                               ),
                             ],
                           ),
