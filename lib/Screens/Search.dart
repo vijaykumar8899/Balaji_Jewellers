@@ -257,7 +257,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         title: Text(doc['ImageName']),
                         onTap: () {
                           _showImagePopup(context, doc['imageUrl'], doc['id'],
-                              doc['Weight'].toString());
+                              doc['weight'].toString());
                         },
                       );
                     },

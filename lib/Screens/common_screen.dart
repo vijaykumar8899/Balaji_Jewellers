@@ -287,13 +287,16 @@ class _CommonScreenState extends State<CommonScreen>
           print('Error');
         });
 
+        var tempImageName =
+            (widget.mainFolder + widget.title + selectedCategory + generatedId)
+                .replaceAll(' ', '');
+
         //saving data in search collection
         await firestore.collection('Search').add({
           'imageUrl': imageUrl,
           'id': generatedId,
           'weight': weight.toString(),
-          'ImageName':
-              widget.mainFolder + widget.title + selectedCategory + generatedId,
+          'ImageName': tempImageName,
           'TimeStamp': Timestamp.now(),
         }).then((value) {
           print(' updated  search collection in Firestore.');
