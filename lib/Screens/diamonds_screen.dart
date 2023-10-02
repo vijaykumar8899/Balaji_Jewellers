@@ -37,7 +37,7 @@ class _DiamondScreenState extends State<DiamondScreen> {
     'Aravanki',
     'Bracelets',
     'Kadiyalu',
-    'Nallapusalu',
+    'Nallapursalu',
     'DD Balls Chains',
     'Black Beats',
     'Jukalu',
@@ -52,18 +52,20 @@ class _DiamondScreenState extends State<DiamondScreen> {
   ];
 
   final List<List<String>> categoriesForTitles = [
-    ['Ladies', 'Gents'],
+    ['Stones', 'Plain'],
+    ['Stones', 'Plain'],
+    ['Stones', 'Plain'],
     ['Chains'],
     ['Stones', 'Plain'],
     ['Stones', 'Plain'],
     ['Stones', 'Plain'],
     ['Stones', 'Plain'],
-    ['Ladies', 'Gents'],
-    ['Ladies', 'Gents'],
+    ['Stones', 'Plain'],
+    ['Stones', 'Plain'],
+    ['Gents', 'Ladies'],
+    ['Gents', 'Ladies'],
     ['Short Length', 'Long Length'],
     ['DD Balls Chains'],
-    ['Stones', 'Plain'],
-    ['Stones', 'Plain'],
     ['Stones', 'Plain'],
     ['Stones', 'Plain'],
     ['Stones', 'Plain'],
@@ -187,7 +189,7 @@ class _DiamondScreenState extends State<DiamondScreen> {
                         builder: (context) => CommonScreen(
                           title: titles[index],
                           categories: categoriesForTitles[index],
-                          mainFolder: 'Gold',
+                          mainFolder: mainFolder,
                         ),
                       ),
                     );

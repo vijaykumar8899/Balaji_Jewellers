@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   CategoryCard(
-                    image: "assets/images/rosegold1.png",
+                    image: "assets/images/RoseGoldHome.png",
                     title: "RoseGold",
                     onTap: () {
                       Get.to(RoseGoldScreen());

@@ -63,7 +63,6 @@ class _SilverScreenState extends State<SilverScreen> {
       'Eyes', /* ... Add your items here ... */
     ],
     [
-      'Ladies Rings',
       'Gents Rings',
       'Necllace',
       'Chains',
@@ -400,10 +399,11 @@ class _SilverScreenState extends State<SilverScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => CommonScreen(
-                                  title: categoriesForTitles[currentTabIndex]
-                                      [itemIndex],
-                                  categories:
-                                      categoriesForTitles[currentTabIndex],
+                                  title: titles[currentTabIndex],
+                                  categories: [
+                                    categoriesForTitles[currentTabIndex]
+                                        [itemIndex]
+                                  ], // Wrap it in a list
                                   mainFolder: mainFolder,
                                 ),
                               ),
@@ -421,8 +421,8 @@ class _SilverScreenState extends State<SilverScreen> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16.0),
                                     image: DecorationImage(
-                                      image: NetworkImage(
-                                        itemImages[currentTabIndex][itemIndex],
+                                      image: AssetImage(
+                                        'assets/images/${itemImages[currentTabIndex][itemIndex]}',
                                       ),
                                       fit: BoxFit.contain,
                                     ),

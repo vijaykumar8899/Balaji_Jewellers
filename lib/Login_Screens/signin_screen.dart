@@ -1,3 +1,5 @@
+//login screen
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -41,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
         String userName = document['userName'];
         String userCity = document['userCity'];
         String userEmail = document['userEmail'];
-        String _Admin = document['Admin'];
+        String Admin = document['Admin'];
 
         // Save user data to SharedPreferences
 
@@ -51,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('userEmail', userEmail);
         await prefs.setString('userName', userName);
         await prefs.setString('userCity', userCity);
-        await prefs.setString('_Admin', _Admin);
+        await prefs.setString('Admin', Admin);
 
         print('User data saved to SharedPreferences');
         Get.offAll(TabsScreen());
@@ -188,8 +190,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Container(
+      child: Scaffold(
         backgroundColor: Colors.grey[300],
         body: SingleChildScrollView(
           child: Container(
@@ -286,7 +288,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 50, vertical: 15),
                                 ),
                                 child: isLoading // Check the loading variable
                                     ? CircularProgressIndicator() // Show loading indicator
@@ -318,7 +321,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 50, vertical: 15),
                                 ),
                                 child: isLoading // Check the loading variable
                                     ? CircularProgressIndicator() // Show loading indicator

@@ -148,7 +148,7 @@ class _CommonScreenState extends State<CommonScreen>
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.black,
           child: Container(
             height: 400,
             width: 400,
@@ -521,7 +521,7 @@ class _CommonScreenState extends State<CommonScreen>
       final firestore = FirebaseFirestore.instance;
       final collection = firestore
           .collection('Wishlist')
-          .doc("${userName}_$userPhoneNumber")
+          .doc(userPhoneNumber)
           .collection('Wishlist');
 
       final existingDoc = await collection
@@ -882,7 +882,7 @@ class _CommonScreenState extends State<CommonScreen>
                                   right: 8,
                                   child: Icon(
                                     Icons.check_circle,
-                                    color: Colors.orangeAccent,
+                                    color: Colors.green,
                                     size: 32,
                                   ),
                                 ),
@@ -1026,11 +1026,11 @@ class _CommonScreenState extends State<CommonScreen>
           final imageUrl = data['imageUrl'] as String;
           final Id = data['id'] as String;
           final weight = data['weight'] as String; // Cast to String if needed
-
+          print("_getImageUrlInReferance $userPhoneNumber");
           try {
             final querySnapshot = await FirebaseFirestore.instance
                 .collection('Wishlist')
-                .doc("$userName+'_'$userPhoneNumber")
+                .doc(userPhoneNumber)
                 .collection('Wishlist')
                 .where('imageUrl', isEqualTo: imageUrl)
                 .get();

@@ -58,7 +58,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Stream<QuerySnapshot> getWishlistImagesStream() {
     return FirebaseFirestore.instance
         .collection('Wishlist')
-        .doc(wishlistUserCollectionDocName)
+        .doc(userPhoneNumber)
         .collection('Wishlist')
         .snapshots(); // Listen to changes in the collection
   }
@@ -195,7 +195,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       final firestore = FirebaseFirestore.instance;
       final collection = firestore
           .collection('Wishlist')
-          .doc(wishlistUserCollectionDocName)
+          .doc(userPhoneNumber)
           .collection('Wishlist');
 
       final existingDoc = await collection
