@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
         String userName = document['userName'];
         String userCity = document['userCity'];
         String userEmail = document['userEmail'];
-        String Admin = document['Admin'];
+        String _Admin = document['Admin'];
 
         // Save user data to SharedPreferences
 
@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('userEmail', userEmail);
         await prefs.setString('userName', userName);
         await prefs.setString('userCity', userCity);
-        await prefs.setString('Admin', Admin);
+        await prefs.setString('_Admin', _Admin);
 
         print('User data saved to SharedPreferences');
         Get.offAll(TabsScreen());

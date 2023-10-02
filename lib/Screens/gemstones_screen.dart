@@ -2,9 +2,9 @@
 
 //final_silver_screen
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:get/get.dart';
 import 'package:jewellery/Screens/common_screen.dart';
 
 class GemStonesScreen extends StatefulWidget {
@@ -250,7 +250,7 @@ class _GemStonesScreenState extends State<GemStonesScreen> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16.0),
                                     image: DecorationImage(
-                                      image: NetworkImage(
+                                      image: CachedNetworkImageProvider(
                                         itemImages[
                                             categoriesForTitles[currentTabIndex]
                                                 [itemIndex]]!,

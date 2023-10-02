@@ -63,7 +63,7 @@ class _CommonScreenState extends State<CommonScreen>
   bool isLoading = false;
   var logger = Logger();
 
-  String? Admin;
+  String? _Admin;
   String? userPhoneNumber;
   String? userName;
   bool isAdmin = false;
@@ -84,13 +84,17 @@ class _CommonScreenState extends State<CommonScreen>
   Future<void> getUserDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      Admin = prefs.getString('Admin');
+      _Admin = prefs.getString('Admin');
       userPhoneNumber = prefs.getString('userPhoneNumber');
       userName = prefs.getString('userName');
-      if (Admin!.isNotEmpty && Admin == 'Admin') {
+      print("$userPhoneNumber $userName $_Admin");
+      if (_Admin == 'Admin') {
         setState(() {
           isAdmin = true;
+          print(isAdmin);
         });
+      } else {
+        print("no");
       }
     });
   }
@@ -149,13 +153,7 @@ class _CommonScreenState extends State<CommonScreen>
             height: 400,
             width: 400,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 10.0,
-                ),
-              ],
+              borderRadius: BorderRadius.circular(10.0),
             ),
             child: Stack(
               children: [
@@ -203,9 +201,11 @@ class _CommonScreenState extends State<CommonScreen>
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     DocumentReference docRef = firestore
-        .collection('${widget.mainFolder}_Calculation')
-        .doc(widget.title)
-        .collection(selectedCategory)
+        .collection('Calculation')
+        .doc(widget.mainFolder)
+        .collection(widget.title)
+        .doc(selectedCategory)
+        .collection('numberOfDocuments')
         .doc('numberOfDocuments');
 
     try {
@@ -238,7 +238,7 @@ class _CommonScreenState extends State<CommonScreen>
 
     await showNumberInputDialog(context, "Enter Weight");
 
-    String generatedId = await _generateId(total);
+    String generatedId = await _generateId(total + 1);
 
     String formattedWeight = weight.toStringAsFixed(3);
 
@@ -273,9 +273,11 @@ class _CommonScreenState extends State<CommonScreen>
 
         // Update image count for the selected category
         await firestore
-            .collection(widget.mainFolder)
-            .doc(widget.title)
-            .collection(selectedCategory)
+            .collection('Calculation')
+            .doc(widget.mainFolder)
+            .collection(widget.title)
+            .doc(selectedCategory)
+            .collection('numberOfDocuments')
             .doc('numberOfDocuments')
             .update({
           'numberOfDocuments': FieldValue.increment(1),
@@ -308,6 +310,7 @@ class _CommonScreenState extends State<CommonScreen>
   }
 
   Future<String> _generateId(int total) async {
+    print("total in generate ud : $total");
     String mainFolderFirstLetter = widget.mainFolder.substring(0, 1);
     String titleFirstLetter =
         widget.title.split(' ').map((word) => word.substring(0, 1)).join('');
@@ -315,7 +318,7 @@ class _CommonScreenState extends State<CommonScreen>
 
     String id =
         '$mainFolderFirstLetter$titleFirstLetter$categoryFirstLetter$total';
-
+    print("id : $id");
     return id;
   }
 
@@ -579,7 +582,7 @@ class _CommonScreenState extends State<CommonScreen>
               ),
             ),
             actions: [
-              if (isSelectionMode)
+              if (isSelectionMode) ...[
                 IconButton(
                   onPressed: () async {
                     setState(() {
@@ -593,7 +596,8 @@ class _CommonScreenState extends State<CommonScreen>
                     size: 30,
                   ),
                 ),
-              if (isAdmin)
+              ],
+              if (isAdmin) ...[
                 PopupMenuButton<String>(
                   elevation: 3,
                   shape: RoundedRectangleBorder(
@@ -674,6 +678,7 @@ class _CommonScreenState extends State<CommonScreen>
                     size: 30,
                   ),
                 ),
+              ],
             ],
             elevation: 0,
           ),

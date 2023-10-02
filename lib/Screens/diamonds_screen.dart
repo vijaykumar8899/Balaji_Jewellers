@@ -37,7 +37,7 @@ class _DiamondScreenState extends State<DiamondScreen> {
     'Aravanki',
     'Bracelets',
     'Kadiyalu',
-    'Nallapursalu',
+    'Nallapusalu',
     'DD Balls Chains',
     'Black Beats',
     'Jukalu',
@@ -52,7 +52,7 @@ class _DiamondScreenState extends State<DiamondScreen> {
   ];
 
   final List<List<String>> categoriesForTitles = [
-    ['Ladies', 'Gents', 'Test'],
+    ['Ladies', 'Gents'],
     ['Chains'],
     ['Stones', 'Plain'],
     ['Stones', 'Plain'],

@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: TabsScreen(),
+      home: LoginScreen(),
       title: "Balaji Jewellers",
     );
   }
