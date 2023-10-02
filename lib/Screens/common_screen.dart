@@ -292,7 +292,8 @@ class _CommonScreenState extends State<CommonScreen>
           'imageUrl': imageUrl,
           'id': generatedId,
           'weight': weight.toString(),
-          'ImageName': widget.title + generatedId,
+          'ImageName':
+              widget.mainFolder + widget.title + selectedCategory + generatedId,
           'TimeStamp': Timestamp.now(),
         }).then((value) {
           print(' updated  search collection in Firestore.');
@@ -521,7 +522,7 @@ class _CommonScreenState extends State<CommonScreen>
       final firestore = FirebaseFirestore.instance;
       final collection = firestore
           .collection('Wishlist')
-          .doc(userPhoneNumber)
+          .doc('${userName}_$userPhoneNumber')
           .collection('Wishlist');
 
       final existingDoc = await collection
@@ -1030,7 +1031,7 @@ class _CommonScreenState extends State<CommonScreen>
           try {
             final querySnapshot = await FirebaseFirestore.instance
                 .collection('Wishlist')
-                .doc(userPhoneNumber)
+                .doc('${userName}_$userPhoneNumber')
                 .collection('Wishlist')
                 .where('imageUrl', isEqualTo: imageUrl)
                 .get();

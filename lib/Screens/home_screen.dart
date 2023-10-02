@@ -232,10 +232,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   ExtraCategoryCard(
-                    image1:
-                        "https://logowik.com/content/uploads/images/297_whatsapp504.jpg",
-                    image2:
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpbUffaI6NuBLZZx2ubInOAeGr_zbsJ6kMNJ41xNBUKVNUM9WimFjKZIPTFCoj4DD7258&usqp=CAU",
+                    image1: "assets/images/wa.jpg",
+                    image2: "assets/images/fb.jpg",
                     onTapImage1: () {
                       final whatsappLink =
                           'https://wa.me/919247879511?text=Hi%20Balaji%20Jewellers';
@@ -489,7 +487,7 @@ class ExtraCategoryCard extends StatelessWidget {
                   onTap: onTapImage1,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(11),
-                    child: Image.network(
+                    child: Image.asset(
                       image1,
                       height: 64,
                       fit: BoxFit.cover,
@@ -513,7 +511,7 @@ class ExtraCategoryCard extends StatelessWidget {
                   onTap: onTapImage2,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(11),
-                    child: Image.network(
+                    child: Image.asset(
                       image2,
                       height: 64,
                       fit: BoxFit.cover,

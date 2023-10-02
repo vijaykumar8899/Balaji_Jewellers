@@ -94,7 +94,8 @@ class _SilverScreenState extends State<SilverScreen> {
       'Matilu',
       'Champaswaralu',
       'Chevi Chutlu',
-      'Chandra Haralu',
+      'Champaswaralu',
+      'Chevi Chutlu',
       /* ... Add your items here ... */
     ],
     [
@@ -203,6 +204,8 @@ class _SilverScreenState extends State<SilverScreen> {
       'SterlingSilver53.png',
       'SterlingSilver54.png',
       'SterlingSilver55.png',
+      'SterlingSilver56.png',
+      'SterlingSilver57.png',
       'SterlingSilver56.png',
       'SterlingSilver57.png',
       /* ... Add your image paths here ... */

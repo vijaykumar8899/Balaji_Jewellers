@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static String userNumber = '';
 
   // Check if the user's phone number exists in Firestore
   Future<bool> doesUserPhoneNumberExist(String userPhoneNumber) async {
@@ -16,6 +17,7 @@ class AuthService {
           .where('userPhoneNumber', isEqualTo: userPhoneNumber)
           .get();
 
+      userNumber = userPhoneNumber;
       return userSnapshot.docs.isNotEmpty;
     } catch (e) {
       print('Error checking user phone number: $e');

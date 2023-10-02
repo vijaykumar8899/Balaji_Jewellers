@@ -1,6 +1,7 @@
 //whishlistScreen
 import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jewellery/Login_Screens/user_check.dart';
 import 'package:logger/logger.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,6 @@ class _WishlistScreenState extends State<WishlistScreen> {
   @override
   void initState() {
     super.initState();
-    _loadImagesForCategory();
     getUserDataFromSharedPreferences();
   }
 
@@ -51,14 +51,20 @@ class _WishlistScreenState extends State<WishlistScreen> {
     setState(() {
       userPhoneNumber = prefs.getString('userPhoneNumber');
       userName = prefs.getString('userName');
-      wishlistUserCollectionDocName = "${userName}_$userPhoneNumber";
+      print("$userPhoneNumber");
     });
+
+    if (userName!.isNotEmpty && userPhoneNumber!.isNotEmpty) {
+      wishlistUserCollectionDocName = "${userName}_$userPhoneNumber";
+      print(wishlistUserCollectionDocName);
+      _loadImagesForCategory();
+    }
   }
 
   Stream<QuerySnapshot> getWishlistImagesStream() {
     return FirebaseFirestore.instance
         .collection('Wishlist')
-        .doc(userPhoneNumber)
+        .doc(wishlistUserCollectionDocName)
         .collection('Wishlist')
         .snapshots(); // Listen to changes in the collection
   }
@@ -195,7 +201,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       final firestore = FirebaseFirestore.instance;
       final collection = firestore
           .collection('Wishlist')
-          .doc(userPhoneNumber)
+          .doc('${userName}_$userPhoneNumber')
           .collection('Wishlist');
 
       final existingDoc = await collection

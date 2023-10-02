@@ -1,4 +1,7 @@
+//WelcomeScreen final
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:jewellery/Login_Screens/signin_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -28,7 +31,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             controller: _pageController,
             children: [
               createPage(
-                image: 'assets/images/first-e.png',
+                image: 'assets/images/bb1.png',
                 title: Constants.titleOne,
                 description: Constants.descriptionOne,
               ),
@@ -38,7 +41,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 description: Constants.descriptionTwo,
               ),
               createPage(
-                image: 'assets/images/bb1.png',
+                image: 'assets/images/first-e.png',
                 title: Constants.titleThree,
                 description: Constants.descriptionThree,
               ),
@@ -142,35 +145,37 @@ class createPage extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Constants.primaryColor,
-              fontSize: 30, // Adjusted font size
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Playfair Display',
-              decoration: TextDecoration.none,
-              shadows: [
-                Shadow(
-                  color: Colors.black.withOpacity(0.2), // Shadow color
-                  blurRadius: 4,
-                  offset: Offset(2, 2),
-                ),
-              ],
+            style: GoogleFonts.fraunces(
+              // You can replace 'Lato' with your desired Google Font
+              textStyle: TextStyle(
+                color: Constants.primaryColor,
+                fontSize: 26, // Adjusted font size
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.none,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 2,
+                    offset: Offset(2, 2),
+                  ),
+                ],
+              ),
             ),
           ),
 
           const SizedBox(height: 20),
           Text(
             description,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 20, // Adjusted font size
-              fontWeight: FontWeight.normal, // You can adjust this as needed
-              color: Colors.black87, // Darker color for a classic look
-              fontFamily: 'Georgia', // A serif font for a classic feel
+            textAlign: TextAlign.center, // Aligns text horizontally to center
+            style: GoogleFonts.acme(
+              //merienda
+              fontSize: 20,
+              fontWeight: FontWeight.normal,
+              color: Colors.black87,
               fontStyle: FontStyle.normal,
               shadows: [
                 Shadow(
-                  color: Colors.black.withOpacity(0.1), // Subtle shadow color
+                  color: Colors.black.withOpacity(0.1),
                   blurRadius: 2,
                   offset: Offset(1, 1),
                 ),
@@ -193,10 +198,10 @@ class Constants {
   // Onboarding texts
   static var titleOne = "Explore Our Shiny Jewelry";
   static var descriptionOne =
-      "Check out beautiful gold, silver, diamond, rose gold, and gemstone pieces. Our skilled artists make them sparkle just for you.";
+      "Check out beautiful gold, silver, diamond, rose gold, and gemstone pieces. We make them sparkle just for you.";
   static var titleTwo = "Expert Goldsmiths";
   static var descriptionTwo =
-      "Feel the skill of our top gold workers. From classic gold designs to shiny diamonds, we make your wishes real.";
+      "Feel the skill of our own top gold working. From classic gold designs to shiny diamonds, we make your wishes real.";
   static var titleThree = "Selectable Elegance";
   static var descriptionThree =
       "Enjoy beauty and art in every piece. Choose your special style from our handpicked gold, silver, diamond, rose gold, and gemstone choices.";
