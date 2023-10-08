@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:jewellery/Screens/common_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jewellery/Screens/SearchResultScreen.dart';
 
 class GoldScreen extends StatefulWidget {
   const GoldScreen({Key? key}) : super(key: key);

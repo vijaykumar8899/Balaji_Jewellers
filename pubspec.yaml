@@ -40,6 +40,7 @@ dependencies:
   flutter_spinkit: ^5.2.0
   shared_preferences: ^2.2.1
   font_awesome_flutter: ^10.5.0
+  cloud_functions: ^4.4.2
 
 dev_dependencies:
   flutter_test:

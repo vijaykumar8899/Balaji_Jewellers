@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:jewellery/Login_Screens/welcome_screen.dart';
 import 'package:jewellery/Login_Screens/user_check.dart';
+import 'package:jewellery/Screens/silver_screen.dart';
 import 'package:jewellery/Screens/tabs.dart';
+import 'package:jewellery/Screens/usersEditScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -39,7 +41,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: userLoggedIn ? TabsScreen() : TabsScreen(),
+      home: userLoggedIn ? UserListView() : UserListView(),
       title: "Balaji Jewellers",
     );
   }

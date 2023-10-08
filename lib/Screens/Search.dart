@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jewellery/Screens/profile.dart';
+import 'package:jewellery/Screens/SearchResultScreen.dart';
 import 'package:photo_view/photo_view.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -256,6 +257,24 @@ class _SearchScreenState extends State<SearchScreen> {
                       return ListTile(
                         title: Text(doc['ImageName']),
                         onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SearchResultScreen(
+                                title: doc['title'],
+                                categories: doc['catagory'],
+                                mainFolder: doc['mainFolder'],
+                                mainImageUrl: doc['imageUrl'],
+                              ),
+                            ),
+                          );
+
+                          print(doc['mainFolder']);
+                          print(doc['title']);
+                          print(doc['catagory']);
+                          print(doc['imageUrl']);
+                        },
+                        onLongPress: () {
                           _showImagePopup(context, doc['imageUrl'], doc['id'],
                               doc['weight'].toString());
                         },

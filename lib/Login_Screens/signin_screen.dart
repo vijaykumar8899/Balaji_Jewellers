@@ -27,10 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> checkUserExistOrNot(String _userPhoneNumber) async {
     print('phoneNumber inside existing user check $_userPhoneNumber');
     try {
-      final CollectionReference usersCollection = FirebaseFirestore.instance
-          .collection('users')
-          .doc(_userPhoneNumber)
-          .collection('');
+      final CollectionReference usersCollection =
+          FirebaseFirestore.instance.collection('users');
 
       // Query the 'users' collection for the provided phone number
       QuerySnapshot querySnapshot = await usersCollection

@@ -17,7 +17,6 @@ class AuthService {
           .where('userPhoneNumber', isEqualTo: userPhoneNumber)
           .get();
 
-      userNumber = userPhoneNumber;
       return userSnapshot.docs.isNotEmpty;
     } catch (e) {
       print('Error checking user phone number: $e');

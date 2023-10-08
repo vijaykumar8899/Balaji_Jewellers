@@ -190,6 +190,7 @@ class _DiamondScreenState extends State<DiamondScreen> {
                           title: titles[index],
                           categories: categoriesForTitles[index],
                           mainFolder: mainFolder,
+
                         ),
                       ),
                     );

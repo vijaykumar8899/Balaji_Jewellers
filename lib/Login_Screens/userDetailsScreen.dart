@@ -31,11 +31,7 @@ class _userDetailsScreenState extends State<userDetailsScreen> {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
       tempName = _userNameCtrl.text;
 
-      await firestore
-          .collection('users')
-          .doc("${widget.userPhoneNumber_}_${_userNameCtrl.text}")
-          .collection(_userNameCtrl.text)
-          .add({
+      await firestore.collection('users').add({
         'userPhoneNumber': widget.userPhoneNumber_,
         'userName': _userNameCtrl.text,
         'userEmail': _userEmailCtrl.text,

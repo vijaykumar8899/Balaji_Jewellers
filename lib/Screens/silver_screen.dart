@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:jewellery/Screens/common_screen.dart';
-import 'package:jewellery/Screens/test.dart';
+import 'package:jewellery/Screens/SearchResultScreen.dart';
 
 class SilverScreen extends StatefulWidget {
   const SilverScreen({Key? key}) : super(key: key);
@@ -402,15 +402,13 @@ class _SilverScreenState extends State<SilverScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => test(
+                                builder: (context) => CommonScreen(
                                   title: titles[currentTabIndex],
                                   categories: [
                                     categoriesForTitles[currentTabIndex]
                                         [itemIndex]
                                   ], // Wrap it in a list
                                   mainFolder: mainFolder,
-                                  mainImageUrl:
-                                      'https://firebasestorage.googleapis.com/v0/b/jewelleryapp-9e127.appspot.com/o/Silver%2FSilver%20Articles%2FPlates%2FSilver%20ArticlesSSAP4?alt=media&token=4b5e8d93-7932-4a49-8957-8ba9c0a5a431',
                                 ),
                               ),
                             );

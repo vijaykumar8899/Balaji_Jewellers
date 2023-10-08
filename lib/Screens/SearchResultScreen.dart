@@ -1,44 +1,37 @@
-//whishlistScreen
-import 'package:flutter/foundation.dart';
+//SearchResultScreen
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jewellery/Login_Screens/user_check.dart';
 import 'package:logger/logger.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'dart:io';
 import 'package:share/share.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:cupertino_icons/cupertino_icons.dart';
 
-class test extends StatefulWidget {
+class SearchResultScreen extends StatefulWidget {
   final String mainFolder;
   final String title;
-  final List<String> categories;
+  final String categories;
   final String mainImageUrl;
 
-  const test({
-    Key? key,
-    required this.title,
-    required this.categories,
-    required this.mainFolder,
-    required this.mainImageUrl,
-  }) : super(key: key);
+  const SearchResultScreen(
+      {Key? key,
+      required this.title,
+      required this.categories,
+      required this.mainFolder,
+      required this.mainImageUrl})
+      : super(key: key);
 
   @override
-  _testState createState() => _testState();
+  _SearchResultScreenState createState() => _SearchResultScreenState();
 }
 
 var logger = Logger();
 
-class _testState extends State<test> {
+class _SearchResultScreenState extends State<SearchResultScreen> {
   String generatedId = '';
   final firestore = FirebaseFirestore.instance;
   late TabController tabController;
@@ -46,6 +39,7 @@ class _testState extends State<test> {
   bool isSelectionMode = false;
   int currentCount = 0;
   double weight = 0;
+  String selectedCatagory = '';
   Map<String, dynamic> imageUrlCache = {};
   List<DocumentReference> imageUrls = [];
   List<SelectedItem> selectedItems = [];
@@ -53,40 +47,20 @@ class _testState extends State<test> {
   String? userName;
   String wishlistUserCollectionDocName = '';
   final ScrollController _scrollController = ScrollController();
-  String selectedCategory = '';
+  bool isMainImage = false;
+  List<String> scrollToimgList = [];
 
   @override
   void initState() {
     super.initState();
-    // getUserDataFromSharedPreferences();
-    selectedCategory = widget.categories[0];
-    print(widget.mainFolder);
-    print(widget.title);
-    print(widget.categories);
-    print(selectedCategory);
     _loadImagesForCategory();
   }
 
-  // Future<void> getUserDataFromSharedPreferences() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     userPhoneNumber = prefs.getString('userPhoneNumber');
-  //     userName = prefs.getString('userName');
-  //     print("$userPhoneNumber");
-  //   });
-
-  //   if (userName!.isNotEmpty && userPhoneNumber!.isNotEmpty) {
-  //     wishlistUserCollectionDocName = "${userName}_$userPhoneNumber";
-  //     print(wishlistUserCollectionDocName);
-  //     _loadImagesForCategory();
-  //   }
-  // }
-
   Stream<QuerySnapshot> getWishlistImagesStream() {
     return FirebaseFirestore.instance
-        .collection('Wishlist')
-        .doc('testHone_+918309819321')
-        .collection('Wishlist')
+        .collection(widget.mainFolder)
+        .doc(widget.title)
+        .collection(widget.categories)
         .snapshots(); // Listen to changes in the collection
   }
 
@@ -102,24 +76,8 @@ class _testState extends State<test> {
 
       setState(() {
         imageUrls = refs;
-        _scroll();
       });
     });
-  }
-
-  void _scroll() {
-    // Find the index of the mainImageUrl in the imageUrls list
-    final int indexToScroll = imageUrls.indexWhere((imageUrlRef) {
-      final imageUrlData = imageUrlCache[imageUrlRef.path];
-      return imageUrlData != null &&
-          imageUrlData['imageUrl'] == widget.mainImageUrl;
-    });
-
-// Scroll to the desired index
-    if (indexToScroll != -1) {
-      _scrollController.jumpTo(
-          indexToScroll * 270.0); // Assuming the height of each item is 270
-    }
   }
 
   void _showImagePopup(
@@ -269,7 +227,7 @@ class _testState extends State<test> {
         backgroundColor: Colors.grey[300],
         title: Center(
           child: Text(
-            "Wishlist",
+            selectedCatagory,
             style: GoogleFonts.rowdies(
               textStyle: const TextStyle(
                 color: Colors.black,
@@ -331,7 +289,26 @@ class _testState extends State<test> {
               final id = data?['id'];
               final weight = data?['weight'];
               final isSelected = selectedImages.contains(imageUrl);
+              final isMainImage = scrollToimgList.contains(imageUrl);
+
+              if (imageUrl == widget.mainImageUrl) {
+                // Scroll to the current item when the condition is met
+                _scrollController.jumpTo(index *
+                    100); // Set itemHeight to the actual height of your grid items
+                print('yes');
+                print(isMainImage);
+              }
+
               return Container(
+                decoration: BoxDecoration(
+                  border: isMainImage
+                      ? Border.all(
+                          color: Colors
+                              .orangeAccent, // Set the unique border color
+                          width: 1.0, // Set the border width
+                        )
+                      : null, // No border for non-main images
+                ),
                 child: Card(
                   elevation: 4,
                   shape: RoundedRectangleBorder(
@@ -477,6 +454,12 @@ class _testState extends State<test> {
           final imageUrl = data['imageUrl'] as String;
           final Id = data['id'] as String;
           final weight = data['weight'] as String;
+
+          if (imageUrl == widget.mainImageUrl) {
+            scrollToimgList.add(imageUrl);
+            print('bool in _getimageref : $isMainImage');
+            print(scrollToimgList);
+          }
 
           imageUrlCache[refPath] = {
             'imageUrl': imageUrl,

@@ -1,8 +1,11 @@
 //ProfileScreen
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jewellery/Screens/usersEditScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -31,14 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  // Logout() {
-  //   _auth.signOut().then((res) {
-  //     Get.offAll(LoginScreen());
-  //   }).catchError((e) {
-  //     print(e);
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -47,19 +42,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.grey[300], // Change to grey[300]
         elevation: 0,
-        title: Center(
-          child: Text(
-            'Profile',
-            style: GoogleFonts.rowdies(
-              // Use your desired Google Font, e.g., 'lobster'
-              textStyle: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+        title: Text(
+          'Profile',
+          style: GoogleFonts.rowdies(
+            // Use your desired Google Font, e.g., 'lobster'
+            textStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
+        centerTitle: true,
         leading: BackButton(
           color: Colors.black,
           onPressed: () {
@@ -69,11 +63,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              Icons.settings,
-              color: Colors.transparent,
+              Icons.contacts_rounded,
+              color: Colors.red,
             ),
             onPressed: () {
-              // Show search bar and handle search
+              Get.to(UserListView());
             },
           ),
         ],
