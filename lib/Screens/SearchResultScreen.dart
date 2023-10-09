@@ -1,10 +1,12 @@
 //SearchResultScreen
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'dart:io';
 import 'package:share/share.dart';
@@ -40,21 +42,32 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   bool isSelectionMode = false;
   int currentCount = 0;
   double weight = 0;
-  String selectedCatagory = '';
   Map<String, dynamic> imageUrlCache = {};
   List<DocumentReference> imageUrls = [];
   List<SelectedItem> selectedItems = [];
-  String? userPhoneNumber;
-  String? userName;
+  String userPhoneNumber = '';
+  String userName = '';
   String wishlistUserCollectionDocName = '';
   final ScrollController _scrollController = ScrollController();
   bool isMainImage = false;
   List<String> scrollToimgList = [];
+  List<String> isInWishlist = [];
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _loadImagesForCategory();
+    getUserDataFromSharedPreferences();
+  }
+
+  Future<void> getUserDataFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userPhoneNumber = prefs.getString('userPhoneNumber')!;
+      userName = prefs.getString('userName')!;
+      print("in searchResultScreen $userPhoneNumber $userName");
+    });
   }
 
   Stream<QuerySnapshot> getWishlistImagesStream() {
@@ -208,12 +221,19 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
       if (existingDoc.docs.isNotEmpty) {
         // Item exists in the wishlist, remove it
         await collection.doc(existingDoc.docs.first.id).delete();
-        imageUrlCache.remove(existingDoc.docs.first.reference.path);
         setState(() {
-          imageUrlCache;
+          isInWishlist.remove(imageUrl); // Remove from the list
         });
       } else {
-        print('Error toggling wishlist: ');
+        // Item does not exist in the wishlist, add it
+        await collection.add({
+          'imageUrl': imageUrl,
+          'id': id,
+          'weight': weight,
+        });
+        setState(() {
+          isInWishlist.add(imageUrl); // Add to the list
+        });
       }
     } catch (e) {
       print('Error toggling wishlist: $e');
@@ -228,7 +248,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         backgroundColor: Colors.grey[300],
         title: Center(
           child: Text(
-            selectedCatagory,
+            widget.categories,
             style: GoogleFonts.rowdies(
               textStyle: const TextStyle(
                 color: Colors.black,
@@ -238,12 +258,47 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
             ),
           ),
         ),
+        actions: [
+          if (isSelectionMode) ...[
+            IconButton(
+              onPressed: () async {
+                setState(() {
+                  isLoading = true;
+                });
+                _shareSelectedImages();
+              },
+              icon: const Icon(
+                Icons.share,
+                color: Colors.blue,
+                size: 30,
+              ),
+            ),
+          ],
+        ],
         elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+            Center(
+              child: Visibility(
+                visible: isLoading,
+                child: SpinKitCircle(
+                  size: 120,
+                  itemBuilder: (context, index) {
+                    final colors = [Colors.orangeAccent, Colors.black];
+                    final color = colors[index % colors.length];
+
+                    return DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: color,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
             Expanded(
               child: buildGridView(imageUrls),
             ),
@@ -314,6 +369,8 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
               final id = data?['id'];
               final weight = data?['weight'];
               final isSelected = selectedImages.contains(imageUrl);
+              final isInWish = isInWishlist.contains(imageUrl);
+
               final isMainImage = scrollToimgList.contains(imageUrl);
 
               if (imageUrl == widget.mainImageUrl) {
@@ -439,9 +496,13 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                                             imageUrl, id, weight.toString());
                                       },
                                       icon: Icon(
-                                        Icons.favorite,
+                                        isInWish
+                                            ? Icons.favorite
+                                            : Icons.favorite_outline,
                                         size: 30,
-                                        color: Colors.red,
+                                        color: isInWish
+                                            ? Colors.red
+                                            : Colors.black,
                                       ),
                                     ),
                                   ],
@@ -484,6 +545,25 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
             scrollToimgList.add(imageUrl);
             print('bool in _getimageref : $isMainImage');
             print(scrollToimgList);
+          }
+
+          try {
+            final querySnapshot = await FirebaseFirestore.instance
+                .collection('Wishlist')
+                .doc('${userName}_$userPhoneNumber')
+                .collection('Wishlist')
+                .where('imageUrl', isEqualTo: imageUrl)
+                .get();
+
+            if (querySnapshot.docs.isNotEmpty) {
+              // If there are any documents with the same imageUrl, it's in the Wishlist
+              isInWishlist.add(imageUrl);
+            }
+
+            // If there are any documents with the same imageUrl, it's in the Wishlist
+          } catch (e) {
+            print('Error checking imageUrl in Wishlist: $e');
+            // Handle the error case accordingly
           }
 
           imageUrlCache[refPath] = {

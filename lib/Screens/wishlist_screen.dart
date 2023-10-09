@@ -1,5 +1,6 @@
 //whishlistScreen
 import 'package:flutter/foundation.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jewellery/Login_Screens/user_check.dart';
 import 'package:logger/logger.dart';
@@ -44,6 +45,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Map<String, dynamic> imageUrlCache = {};
   List<DocumentReference> imageUrls = [];
   List<SelectedItem> selectedItems = [];
+  bool isLoading = false;
   // String? userPhoneNumber;
   // String? userName;
   // String wishlistUserCollectionDocName = '';
@@ -235,12 +237,47 @@ class _WishlistScreenState extends State<WishlistScreen> {
             ),
           ),
         ),
+        actions: [
+          if (isSelectionMode) ...[
+            IconButton(
+              onPressed: () async {
+                setState(() {
+                  isLoading = true;
+                });
+                _shareSelectedImages();
+              },
+              icon: const Icon(
+                Icons.share,
+                color: Colors.blue,
+                size: 30,
+              ),
+            ),
+          ],
+        ],
         elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+            Center(
+              child: Visibility(
+                visible: isLoading,
+                child: SpinKitCircle(
+                  size: 120,
+                  itemBuilder: (context, index) {
+                    final colors = [Colors.orangeAccent, Colors.black];
+                    final color = colors[index % colors.length];
+
+                    return DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: color,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
             Expanded(
               child: buildGridView(imageUrls),
             ),
