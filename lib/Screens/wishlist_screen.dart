@@ -17,8 +17,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:cupertino_icons/cupertino_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WishlistScreen extends StatefulWidget {
+  final String wishlistUserCollectionDocName;
+
+  const WishlistScreen({
+    Key? key,
+    required this.wishlistUserCollectionDocName,
+  }) : super(key: key);
+
   @override
   _WishlistScreenState createState() => _WishlistScreenState();
 }
@@ -36,35 +44,20 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Map<String, dynamic> imageUrlCache = {};
   List<DocumentReference> imageUrls = [];
   List<SelectedItem> selectedItems = [];
-  String? userPhoneNumber;
-  String? userName;
-  String wishlistUserCollectionDocName = '';
+  // String? userPhoneNumber;
+  // String? userName;
+  // String wishlistUserCollectionDocName = '';
 
   @override
   void initState() {
     super.initState();
-    getUserDataFromSharedPreferences();
-  }
-
-  Future<void> getUserDataFromSharedPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userPhoneNumber = prefs.getString('userPhoneNumber');
-      userName = prefs.getString('userName');
-      print("$userPhoneNumber");
-    });
-
-    if (userName!.isNotEmpty && userPhoneNumber!.isNotEmpty) {
-      wishlistUserCollectionDocName = "${userName}_$userPhoneNumber";
-      print(wishlistUserCollectionDocName);
-      _loadImagesForCategory();
-    }
+    _loadImagesForCategory();
   }
 
   Stream<QuerySnapshot> getWishlistImagesStream() {
     return FirebaseFirestore.instance
         .collection('Wishlist')
-        .doc(wishlistUserCollectionDocName)
+        .doc(widget.wishlistUserCollectionDocName)
         .collection('Wishlist')
         .snapshots(); // Listen to changes in the collection
   }
@@ -201,7 +194,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       final firestore = FirebaseFirestore.instance;
       final collection = firestore
           .collection('Wishlist')
-          .doc('${userName}_$userPhoneNumber')
+          .doc(widget.wishlistUserCollectionDocName)
           .collection('Wishlist');
 
       final existingDoc = await collection
@@ -252,9 +245,36 @@ class _WishlistScreenState extends State<WishlistScreen> {
               child: buildGridView(imageUrls),
             ),
             const SizedBox(
-              height: 30,
+              height: 50,
             ),
           ],
+        ),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 70),
+        child: FloatingActionButton(
+          backgroundColor: Colors.white,
+          onPressed: () {
+            const whatsappLink =
+                'https://wa.me/919247879511?text=Hi%20Balaji%20Jewellers';
+            launch(whatsappLink);
+          },
+          child: Container(
+            width: 80.0, // Adjust the width of the rectangular container
+            height: 56.0, // Adjust the height of the rectangular container
+            padding: EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                  11.0), // Adjust the border radius as needed
+              color: Colors.green,
+            ),
+            child: Image.asset(
+              "assets/images/wa.jpg", // Replace with the path to your asset
+              width: 66.0, // Adjust the width of the image
+              height: 42.0, // Adjust the height of the image
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
       ),
     );

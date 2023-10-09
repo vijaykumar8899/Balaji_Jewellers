@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:share/share.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class SearchResultScreen extends StatefulWidget {
   final String mainFolder;
@@ -250,6 +251,30 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
               height: 30,
             ),
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
+        onPressed: () {
+          const whatsappLink =
+              'https://wa.me/919247879511?text=Hi%20Balaji%20Jewellers';
+          launch(whatsappLink);
+        },
+        child: Container(
+          width: 80.0, // Adjust the width of the rectangular container
+          height: 56.0, // Adjust the height of the rectangular container
+          padding: EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+                11.0), // Adjust the border radius as needed
+            color: Colors.green,
+          ),
+          child: Image.asset(
+            "assets/images/wa.jpg", // Replace with the path to your asset
+            width: 66.0, // Adjust the width of the image
+            height: 42.0, // Adjust the height of the image
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );

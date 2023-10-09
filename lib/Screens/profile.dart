@@ -17,6 +17,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? userName;
   String? userCity;
   String? userEmail;
+  String? Admin_;
+  bool isAdmin = false;
 
   @override
   void initState() {
@@ -31,7 +33,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userName = prefs.getString('userName');
       userEmail = prefs.getString('userEmail');
       userCity = prefs.getString('userCity');
+      Admin_ = prefs.getString('Admin');
+      print('$userPhoneNumber $userName $userCity $userEmail $Admin_');
     });
+    if (Admin_ == 'Admin') {
+      setState(() {
+        isAdmin = true;
+      });
+    }
   }
 
   @override
@@ -61,15 +70,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           },
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.contacts_rounded,
-              color: Colors.red,
+          if (isAdmin) ...[
+            IconButton(
+              icon: Icon(
+                FontAwesomeIcons.userCheck,
+                color: Colors.red,
+              ),
+              onPressed: () {
+                Get.to(UserListView());
+              },
             ),
-            onPressed: () {
-              Get.to(UserListView());
-            },
-          ),
+          ],
         ],
       ),
       body: SingleChildScrollView(

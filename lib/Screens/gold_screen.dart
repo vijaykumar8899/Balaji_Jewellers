@@ -51,7 +51,7 @@ class _GoldScreenState extends State<GoldScreen> {
   ];
 
   final List<List<String>> categoriesForTitles = [
-    ['Stones', 'Plain', 'test'],
+    ['Stones', 'Plain'],
     ['Stones', 'Plain'],
     ['Stones', 'Plain'],
     ['Chains'],

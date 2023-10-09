@@ -29,7 +29,7 @@ class _SilverScreenState extends State<SilverScreen> {
   ];
   final List<List<String>> categoriesForTitles = [
     [
-      'test',
+      'Plates',
       'Glasses',
       'Stand Kundhulu',
       'Pancha Patra',
