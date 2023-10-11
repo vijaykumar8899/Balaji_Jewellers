@@ -260,8 +260,10 @@ class _CommonScreenState extends State<CommonScreen>
             .doc(widget.title)
             .collection(selectedCategory)
             .add({
+          'mainFolder': widget.mainFolder,
+          'title': widget.title,
+          'catagory': selectedCategory,
           'imageUrl': imageUrl,
-          'category': selectedCategory,
           'id': generatedId,
           'weight': formattedWeight,
           'ImageName':
@@ -288,16 +290,16 @@ class _CommonScreenState extends State<CommonScreen>
           print('Error');
         });
 
-        var tempImageName =
-            (widget.mainFolder + widget.title + selectedCategory + generatedId)
-                .replaceAll(' ', '');
-
         //saving data in search collection
         await firestore.collection('Search').add({
+          'mainFolder': widget.mainFolder,
+          'title': widget.title,
+          'catagory': selectedCategory,
           'imageUrl': imageUrl,
           'id': generatedId,
-          'weight': weight.toString(),
-          'ImageName': tempImageName,
+          'weight': formattedWeight,
+          'ImageName':
+              widget.mainFolder + widget.title + selectedCategory + generatedId,
           'TimeStamp': Timestamp.now(),
         }).then((value) {
           print(' updated  search collection in Firestore.');
@@ -1070,7 +1072,6 @@ class _CommonScreenState extends State<CommonScreen>
           final imageUrl = data['imageUrl'] as String;
           final Id = data['id'] as String;
           final weight = data['weight'] as String; // Cast to String if needed
-          print("_getImageUrlInReferance $userPhoneNumber");
           try {
             final querySnapshot = await FirebaseFirestore.instance
                 .collection('Wishlist')

@@ -75,6 +75,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         .collection(widget.mainFolder)
         .doc(widget.title)
         .collection(widget.categories)
+        .orderBy('TimeStamp', descending: true)
         .snapshots(); // Listen to changes in the collection
   }
 
@@ -245,6 +246,12 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
+        leading: BackButton(
+          color: Colors.black,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         backgroundColor: Colors.grey[300],
         title: Center(
           child: Text(
@@ -374,11 +381,11 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
               final isMainImage = scrollToimgList.contains(imageUrl);
 
               if (imageUrl == widget.mainImageUrl) {
-                // Scroll to the current item when the condition is met
-                _scrollController.jumpTo(index *
-                    100); // Set itemHeight to the actual height of your grid items
-                print('yes');
-                print(isMainImage);
+                // Print statements for debugging
+                print('Scrolling to main image: $imageUrl');
+                print('Index: $index');
+                _scrollController
+                    .jumpTo(index * 100); // Adjust this value as needed
               }
 
               return Container(
