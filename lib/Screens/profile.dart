@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jewellery/Screens/common_screen.dart';
 import 'package:jewellery/Screens/usersEditScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -71,6 +72,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         actions: [
           if (isAdmin) ...[
+            IconButton(
+              icon: Icon(
+                FontAwesomeIcons.solidImages,
+                color: Colors.red,
+              ),
+              onPressed: () {
+                Get.to(CommonScreen(
+                  title: 'Home_Slider',
+                  categories: ['AllImages'],
+                  mainFolder: 'WelcomeImages',
+                ));
+              },
+            ),
             IconButton(
               icon: Icon(
                 FontAwesomeIcons.userCheck,

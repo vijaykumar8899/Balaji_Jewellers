@@ -1,4 +1,5 @@
 //HOMESCREEN FINAL
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:get/get.dart';
@@ -186,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SizedBox(height: 25),
-            CustomCarouselSlider(images: images),
+            CustomCarouselSlider(),
             SizedBox(height: 25),
             Container(
               height: 335,
@@ -256,80 +257,121 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class CustomCarouselSlider extends StatefulWidget {
-  final List<String> images;
-
-  CustomCarouselSlider({required this.images});
-
   @override
   _CustomCarouselSliderState createState() => _CustomCarouselSliderState();
 }
 
 class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
   int _currentIndex = 0;
+  List<String> images = [];
+
+  @override
+  void initState() {
+    super.initState();
+    final stream = getWishlistImagesStream();
+
+    stream.listen((QuerySnapshot querySnapshot) {
+      setState(() {
+        images = querySnapshot.docs
+            .map((doc) =>
+                (doc.data() as Map<String, dynamic>)['imageUrl'] as String)
+            .toList();
+      });
+    });
+  }
+
+  Stream<QuerySnapshot> getWishlistImagesStream() {
+    return FirebaseFirestore.instance
+        .collection('WelcomeImages')
+        .doc('Home_Slider')
+        .collection('AllImages')
+        .snapshots(); // Listen to changes in the collection
+  }
+
+  Future<List<String>> fetchImagesFromFirestore() async {
+    List<String> imageUrls = [];
+    final stream = getWishlistImagesStream();
+
+    try {
+      stream.listen((QuerySnapshot querySnapshot) {
+        imageUrls = querySnapshot.docs
+            .map((doc) =>
+                (doc.data() as Map<String, dynamic>)['imageUrl'] as String)
+            .toList();
+      });
+    } catch (e) {
+      print("Error fetching images from Firestore: $e");
+    }
+
+    return imageUrls;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CarouselSlider(
-          options: CarouselOptions(
-            height: MediaQuery.of(context).size.width * 0.48,
-            enlargeCenterPage: true,
-            autoPlay: true,
-            aspectRatio: 4 / 3,
-            autoPlayCurve: Curves.fastOutSlowIn,
-            enableInfiniteScroll: true,
-            autoPlayAnimationDuration: Duration(milliseconds: 800),
-            viewportFraction: 0.8,
-            onPageChanged: (index, reason) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-          ),
-          items: widget.images.map((item) {
-            return Builder(
-              builder: (BuildContext context) {
-                return Container(
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.width * 0.75,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomRight,
-                      colors: [
-                        Colors.black.withOpacity(.4),
-                        Colors.black.withOpacity(.2),
+        if (images.isEmpty)
+          CircularProgressIndicator() // Show a loading indicator while fetching images
+        else
+          CarouselSlider(
+            options: CarouselOptions(
+              height: MediaQuery.of(context).size.width * 0.48,
+              enlargeCenterPage: true,
+              autoPlay: true,
+              aspectRatio: 4 / 3,
+              autoPlayCurve: Curves.fastOutSlowIn,
+              enableInfiniteScroll: true,
+              autoPlayAnimationDuration: Duration(milliseconds: 800),
+              viewportFraction: 0.8,
+              onPageChanged: (index, reason) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            ),
+            items: images.map((item) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Container(
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.width * 0.75,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomRight,
+                        colors: [
+                          Colors.black.withOpacity(.4),
+                          Colors.black.withOpacity(.2),
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(0, 2),
+                          blurRadius: 6.0,
+                        ),
                       ],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 2),
-                        blurRadius: 6.0,
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: AspectRatio(
-                      aspectRatio: 4 / 3,
-                      child: Image.asset(
-                        item,
-                        fit: BoxFit.cover,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20.0),
+                      child: AspectRatio(
+                        aspectRatio: 4 / 3,
+                        child: Image.network(
+                          item, // Use the Firestore image URL
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            );
-          }).toList(),
-        ),
+                  );
+                },
+              );
+            }).toList(),
+          ),
         SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: widget.images.map((url) {
-            int index = widget.images.indexOf(url);
+          children: images.map((url) {
+            int index = images.indexOf(url);
             return Container(
               width: 8.0,
               height: 8.0,
