@@ -168,8 +168,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   padding: const EdgeInsets.all(3),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKfHVThC6NDvAo7W_aBedFmduYaNv6oXl-5T0lykgFHRoznpF85SfTb5c17nw9LqJVY94&usqp=CAU',
+                    child: Image.asset(
+                      'assets/images/profileIcon.jpeg',
                       width: MediaQuery.of(context).size.width *
                           0.08, // Adjust this value as needed
                       height: MediaQuery.of(context).size.width *

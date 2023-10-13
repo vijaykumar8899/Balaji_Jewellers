@@ -1,4 +1,5 @@
 //HOMESCREEN FINAL
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -7,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jewellery/Screens/Search.dart';
 import 'package:jewellery/Screens/diamonds_screen.dart';
 import 'package:jewellery/Screens/profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 import 'gemstones_screen.dart';
 import 'gold_screen.dart';
 import 'rosegold_screen.dart';
@@ -19,6 +22,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String? userName;
+
   final List<String> images = [
     'assets/images/poster1.jpg',
     'assets/images/image 2.jpg',
@@ -31,6 +36,20 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserDataFromSharedPreferences();
+  }
+
+  Future<void> getUserDataFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('userName');
+    });
+  }
 
   void _showUnderDevelopmentMessage() {
     showDialog(
@@ -118,8 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.all(3),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKfHVThC6NDvAo7W_aBedFmduYaNv6oXl-5T0lykgFHRoznpF85SfTb5c17nw9LqJVY94&usqp=CAU',
+                    child: Image.asset(
+                      'assets/images/profileIcon.jpeg',
                       width: MediaQuery.of(context).size.width *
                           0.08, // Adjust this value as needed
                       height: MediaQuery.of(context).size.width *
@@ -237,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     image2: "assets/images/fb.jpg",
                     onTapImage1: () {
                       final whatsappLink =
-                          'https://wa.me/919247879511?text=Hi%20Balaji%20Jewellers';
+                          'https://wa.me/919247879511?text=Hi%2C%20Balaji%20Jewellers%2C%20I%20am%20$userName%20and%20interested%20in%20your%20catalogue';
                       launch(whatsappLink);
                     },
                     onTapImage2: () {
@@ -356,9 +375,22 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
                       borderRadius: BorderRadius.circular(20.0),
                       child: AspectRatio(
                         aspectRatio: 4 / 3,
-                        child: Image.network(
-                          item, // Use the Firestore image URL
+                        child: CachedNetworkImage(
+                          imageUrl: item, // Use the Firestore image URL
                           fit: BoxFit.cover,
+                          placeholder: (context, url) {
+                            return Shimmer.fromColors(
+                              baseColor: Colors.grey[300]!,
+                              highlightColor: Colors.grey[100]!,
+                              child: Container(
+                                width: double.infinity,
+                                height: double.infinity,
+                                color: Colors.white,
+                              ),
+                            );
+                          },
+                          errorWidget: (context, url, error) => Icon(Icons
+                              .error), // Widget to display in case of an error
                         ),
                       ),
                     ),

@@ -72,6 +72,7 @@ class _TabsScreenState extends State<TabsScreen>
               HomeScreen(), // Displayed when currentIndex is 0
               WishlistScreen(
                 wishlistUserCollectionDocName: wishlistUserCollectionDocName,
+                userName: userName,
               ), // Displayed when currentIndex is 1
             ],
           ),

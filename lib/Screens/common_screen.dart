@@ -149,45 +149,47 @@ class _CommonScreenState extends State<CommonScreen>
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.transparent,
           child: Container(
-            height: 400,
             width: 400,
+            height: 400, // Specify the height here
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
             ),
-            child: Stack(
+            child: Column(
               children: [
-                PhotoView(
-                  imageProvider: NetworkImage(imageUrl),
-                  backgroundDecoration: const BoxDecoration(
-                    color: Colors.transparent,
-                  ),
-                  minScale: PhotoViewComputedScale.contained,
-                  maxScale: PhotoViewComputedScale.covered * 2,
-                ),
-                Positioned(
-                  top: 10, // Adjust the top position as needed
-                  left: 10, // Adjust the left position as needed
-                  child: Text(
-                    "Id: $id",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                Expanded(
+                  child: PhotoView(
+                    imageProvider: NetworkImage(imageUrl),
+                    backgroundDecoration: const BoxDecoration(
+                      color: Colors.transparent,
                     ),
+                    minScale: PhotoViewComputedScale.contained,
+                    maxScale: PhotoViewComputedScale.covered * 2,
                   ),
                 ),
-                Positioned(
-                  top: 40, // Adjust the top position as needed
-                  left: 10, // Adjust the left position as needed
-                  child: Text(
-                    "Weight: $weight",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Weight: $weight",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "Id: $id",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -774,8 +776,8 @@ class _CommonScreenState extends State<CommonScreen>
               FloatingActionButton(
                 backgroundColor: Colors.white,
                 onPressed: () {
-                  const whatsappLink =
-                      'https://wa.me/919247879511?text=Hi%20Balaji%20Jewellers';
+                  final whatsappLink =
+                      'https://wa.me/919247879511?text=Hi%2C%20Balaji%20Jewellers%2C%20I%20am%20$userName%20and%20interested%20in%20your%20catalogue';
                   launch(whatsappLink);
                 },
                 child: Container(

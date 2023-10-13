@@ -22,10 +22,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 class WishlistScreen extends StatefulWidget {
   final String wishlistUserCollectionDocName;
+  final String userName;
 
   const WishlistScreen({
     Key? key,
     required this.wishlistUserCollectionDocName,
+    required this.userName,
   }) : super(key: key);
 
   @override
@@ -279,7 +281,50 @@ class _WishlistScreenState extends State<WishlistScreen> {
               ),
             ),
             Expanded(
-              child: buildGridView(imageUrls),
+              child: imageUrls.isEmpty
+                  ? const Center(
+                      // Show a message when there are no images in the wishlist
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Your wishlist is empty!',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'To add images to your wishlist, press the',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.favorite,
+                                size: 30,
+                                color: Colors.red,
+                              ),
+                              Text(
+                                ' icon on your favorite images.',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  : buildGridView(imageUrls), // Display images
             ),
             const SizedBox(
               height: 50,
@@ -292,8 +337,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
         child: FloatingActionButton(
           backgroundColor: Colors.white,
           onPressed: () {
-            const whatsappLink =
-                'https://wa.me/919247879511?text=Hi%20Balaji%20Jewellers';
+            final whatsappLink =
+                'https://wa.me/919247879511?text=Hi%2C%20Balaji%20Jewellers%2C%20I%20am%20${widget.userName}%20and%20interested%20in%20your%20catalogue';
             launch(whatsappLink);
           },
           child: Container(

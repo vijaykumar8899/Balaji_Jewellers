@@ -28,28 +28,63 @@ class _UserListViewState extends State<UserListView> {
 
   // Handle the result as needed
 
-  void showDeleteConfirmationDialog(String documentId) {
+  void showDeleteConfirmationDialog(String documentId, String userName) {
+    showDialog(
+      context: context,
+      builder: (BuildContext outerContext) {
+        return AlertDialog(
+          title: const Text('Select One option'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                DeleteOrmakeAdmin(documentId, userName, 'Admin', outerContext);
+              },
+              child: const Text('Admin'),
+            ),
+            TextButton(
+              onPressed: () {
+                DeleteOrmakeAdmin(documentId, userName, 'Delete', outerContext);
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void DeleteOrmakeAdmin(String documentId, String userName, String text,
+      BuildContext outerContext) {
+    print('inside DeleteOrmakeAdmin');
     final firestore = FirebaseFirestore.instance;
     final collection = firestore.collection('users');
 
     showDialog(
-      context: context,
+      context: outerContext, // Use the context of the outer dialog
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Selected User?'),
-          content:
-              const Text('Are you sure you want to delete the selected user?'),
+          title: Text('$text Selected User?'),
+          content: Text("Are you sure you want to $text the $userName ?"),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
-                await collection.doc(documentId).delete();
-                Navigator.of(context).pop(); // Close the dialog
+                if (text == 'Delete') {
+                  await collection.doc(documentId).delete();
+                } else if (text == 'Admin') {
+                  print('inside else if ');
+                  await collection.doc(documentId).update({
+                    'Admin': 'Admin', // Making as admin
+                  });
+                }
+                Navigator.of(context).pop(); // Close the inner dialog
+                Navigator.of(outerContext).pop(); // Close the outer dialog
               },
-              child: const Text('Delete'),
+              child: Text(text),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Close the inner dialog
+                Navigator.of(outerContext).pop(); // Close the outer dialog
               },
               child: const Text('Cancel'),
             ),
@@ -112,121 +147,134 @@ class _UserListViewState extends State<UserListView> {
           ],
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: usersCollection.snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
+      body: Container(
+        color: Colors.grey[300],
+        child: StreamBuilder<QuerySnapshot>(
+          stream: usersCollection.snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
-              child: Text('No users found.'),
-            );
-          }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return Center(
+                child: Text('No users found.'),
+              );
+            }
 
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              DocumentSnapshot userDocument = snapshot.data!.docs[index];
-              Map<String, dynamic> userData =
-                  userDocument.data() as Map<String, dynamic>;
+            return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot userDocument = snapshot.data!.docs[index];
+                Map<String, dynamic> userData =
+                    userDocument.data() as Map<String, dynamic>;
 
-              // Extract user data
-              String userName = userData['userName'] ?? 'N/A';
-              String userEmail = userData['userEmail'] ?? 'N/A';
-              String userPhoneNumber = userData['userPhoneNumber'] ?? 'N/A';
-              String userCity = userData['userCity'] ?? 'N/A';
-              Timestamp timeStamp = userData['TimeStamp'] as Timestamp;
+                // Extract user data
+                String userName = userData['userName'] ?? 'N/A';
+                String userEmail = userData['userEmail'] ?? 'N/A';
+                String userPhoneNumber = userData['userPhoneNumber'] ?? 'N/A';
+                String userCity = userData['userCity'] ?? 'N/A';
+                String admin_ = userData['Admin'] ?? 'N/A';
+                Timestamp timeStamp = userData['TimeStamp'] as Timestamp;
 
-              // Format timestamp
-              String formattedTimestamp =
-                  timeStamp.toDate().toString(); // Customize this as needed
+                // Format timestamp
+                String formattedTimestamp =
+                    timeStamp.toDate().toString(); // Customize this as needed
 
-              return GestureDetector(
-                onLongPress: () {
-                  showDeleteConfirmationDialog(userDocument.id);
-                },
-                onTap: () {
-                  wishlistUserCollectionDocName =
-                      "${userName}_$userPhoneNumber";
-                  print('useEditScreen : $wishlistUserCollectionDocName');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WishlistScreen(
-                        wishlistUserCollectionDocName:
-                            wishlistUserCollectionDocName,
+                return GestureDetector(
+                  onLongPress: () {
+                    showDeleteConfirmationDialog(userDocument.id, userName);
+                  },
+                  onTap: () {
+                    wishlistUserCollectionDocName =
+                        "${userName}_$userPhoneNumber";
+                    print('useEditScreen : $wishlistUserCollectionDocName');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WishlistScreen(
+                          wishlistUserCollectionDocName:
+                              wishlistUserCollectionDocName,
+                          userName: userName,
+                        ),
                       ),
-                    ),
-                  );
-                },
-                child: Container(
-                  child: Card(
-                    margin: EdgeInsets.all(8.0),
-                    elevation: 2.0,
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Name: $userName',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                    );
+                  },
+                  child: Container(
+                    child: Card(
+                      margin: EdgeInsets.all(8.0),
+                      elevation: 2.0,
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Name: $userName',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Text(
-                            'Email: $userEmail',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black,
+                            SizedBox(height: 8.0),
+                            Text(
+                              'Email: $userEmail',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 4.0),
-                          Text(
-                            'Phone: $userPhoneNumber',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black,
+                            SizedBox(height: 4.0),
+                            Text(
+                              'Phone: $userPhoneNumber',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 4.0),
-                          Text(
-                            'City: $userCity',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black,
+                            SizedBox(height: 4.0),
+                            Text(
+                              'City: $userCity',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 4.0),
-                          Text(
-                            'Timestamp: $formattedTimestamp',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black,
+                            SizedBox(height: 4.0),
+                            Text(
+                              'Admin: $admin_',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 4.0),
+                            Text(
+                              'Timestamp: $formattedTimestamp',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

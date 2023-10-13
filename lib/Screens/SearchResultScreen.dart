@@ -103,49 +103,45 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Container(
-            height: 400,
             width: 400,
+            height: 400, // Specify the height here
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 10.0,
-                ),
-              ],
+              borderRadius: BorderRadius.circular(10.0),
             ),
-            child: Stack(
+            child: Column(
               children: [
-                PhotoView(
-                  imageProvider: NetworkImage(imageUrl),
-                  backgroundDecoration: const BoxDecoration(
-                    color: Colors.transparent,
-                  ),
-                  minScale: PhotoViewComputedScale.contained,
-                  maxScale: PhotoViewComputedScale.covered * 2,
-                ),
-                Positioned(
-                  top: 10, // Adjust the top position as needed
-                  left: 10, // Adjust the left position as needed
-                  child: Text(
-                    "Id: $id",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                Expanded(
+                  child: PhotoView(
+                    imageProvider: NetworkImage(imageUrl),
+                    backgroundDecoration: const BoxDecoration(
+                      color: Colors.transparent,
                     ),
+                    minScale: PhotoViewComputedScale.contained,
+                    maxScale: PhotoViewComputedScale.covered * 2,
                   ),
                 ),
-                Positioned(
-                  top: 40, // Adjust the top position as needed
-                  left: 10, // Adjust the left position as needed
-                  child: Text(
-                    "Weight: $weight",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Weight: $weight",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "Id: $id",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -253,18 +249,17 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
           },
         ),
         backgroundColor: Colors.grey[300],
-        title: Center(
-          child: Text(
-            widget.categories,
-            style: GoogleFonts.rowdies(
-              textStyle: const TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+        title: Text(
+          widget.categories,
+          style: GoogleFonts.rowdies(
+            textStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
+        centerTitle: true,
         actions: [
           if (isSelectionMode) ...[
             IconButton(
@@ -318,8 +313,8 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
         onPressed: () {
-          const whatsappLink =
-              'https://wa.me/919247879511?text=Hi%20Balaji%20Jewellers';
+          final whatsappLink =
+              'https://wa.me/919247879511?text=Hi%2C%20Balaji%20Jewellers%2C%20I%20am%20$userName%20and%20interested%20in%20your%20catalogue';
           launch(whatsappLink);
         },
         child: Container(
@@ -392,9 +387,8 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                 decoration: BoxDecoration(
                   border: isMainImage
                       ? Border.all(
-                          color: Colors
-                              .orangeAccent, // Set the unique border color
-                          width: 1.0, // Set the border width
+                          color: Colors.red, // Set the unique border color
+                          width: 1.5, // Set the border width
                         )
                       : null, // No border for non-main images
                 ),
