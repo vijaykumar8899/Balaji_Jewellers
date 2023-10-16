@@ -2,31 +2,25 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jewellery/Login_Screens/user_check.dart';
 import 'package:logger/logger.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'dart:io';
 import 'package:share/share.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:cupertino_icons/cupertino_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class WishlistScreen extends StatefulWidget {
-  final String wishlistUserCollectionDocName;
+  final String userPhoneNumber;
   final String userName;
 
   const WishlistScreen({
     Key? key,
-    required this.wishlistUserCollectionDocName,
+    required this.userPhoneNumber,
     required this.userName,
   }) : super(key: key);
 
@@ -48,9 +42,6 @@ class _WishlistScreenState extends State<WishlistScreen> {
   List<DocumentReference> imageUrls = [];
   List<SelectedItem> selectedItems = [];
   bool isLoading = false;
-  // String? userPhoneNumber;
-  // String? userName;
-  // String wishlistUserCollectionDocName = '';
 
   @override
   void initState() {
@@ -61,7 +52,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Stream<QuerySnapshot> getWishlistImagesStream() {
     return FirebaseFirestore.instance
         .collection('Wishlist')
-        .doc(widget.wishlistUserCollectionDocName)
+        .doc(widget.userPhoneNumber)
         .collection('Wishlist')
         .snapshots(); // Listen to changes in the collection
   }
@@ -155,8 +146,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       }
 
       if (imageFiles.isNotEmpty) {
-        Share.shareFiles(imageFiles,
-            text: 'Sharing ${selectedImages.length} images');
+        Share.shareFiles(imageFiles);
       } else {
         // Handle the case when no images could be downloaded.
         print('No images to share.');
@@ -190,7 +180,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       imageFiles.add(filePath);
     }
 
-    Share.shareFiles(imageFiles, text: 'Sharing ${imageUrls.length} images');
+    Share.shareFiles(imageFiles);
   }
 
   Future<void> toggleWishlist(imageUrl, id, weight) async {
@@ -198,7 +188,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       final firestore = FirebaseFirestore.instance;
       final collection = firestore
           .collection('Wishlist')
-          .doc(widget.wishlistUserCollectionDocName)
+          .doc(widget.userPhoneNumber)
           .collection('Wishlist');
 
       final existingDoc = await collection
@@ -227,18 +217,17 @@ class _WishlistScreenState extends State<WishlistScreen> {
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: Center(
-          child: Text(
-            "Wishlist",
-            style: GoogleFonts.rowdies(
-              textStyle: const TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+        title: Text(
+          "Wishlist",
+          style: GoogleFonts.rowdies(
+            textStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
+        centerTitle: true,
         actions: [
           if (isSelectionMode) ...[
             IconButton(

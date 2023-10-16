@@ -6,6 +6,7 @@ import 'package:jewellery/Login_Screens/welcome_screen.dart';
 import 'package:jewellery/Login_Screens/user_check.dart';
 import 'package:jewellery/Screens/tabs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jewellery/api/push_notification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +14,10 @@ void main() async {
   await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? userPhoneNumber = prefs.getString('userPhoneNumber');
+
+  final FirebaseApi firebaseApi = FirebaseApi(); // Creating an instance
+  await firebaseApi
+      .initNotifications(); // Calling the notification function inside api/push_notifications using  instance
 
   final AuthService authService = AuthService();
   bool userLoggedIn = false;

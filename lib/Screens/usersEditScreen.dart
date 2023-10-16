@@ -73,7 +73,7 @@ class _UserListViewState extends State<UserListView> {
                 } else if (text == 'Admin') {
                   print('inside else if ');
                   await collection.doc(documentId).update({
-                    'Admin': 'Admin', // Making as admin
+                    'Admin': 'Admin2', // Making as admin
                   });
                 }
                 Navigator.of(context).pop(); // Close the inner dialog
@@ -194,15 +194,12 @@ class _UserListViewState extends State<UserListView> {
                     showDeleteConfirmationDialog(userDocument.id, userName);
                   },
                   onTap: () {
-                    wishlistUserCollectionDocName =
-                        "${userName}_$userPhoneNumber";
-                    print('useEditScreen : $wishlistUserCollectionDocName');
+                    print('useEditScreen : $userPhoneNumber');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => WishlistScreen(
-                          wishlistUserCollectionDocName:
-                              wishlistUserCollectionDocName,
+                          userPhoneNumber: userPhoneNumber,
                           userName: userName,
                         ),
                       ),

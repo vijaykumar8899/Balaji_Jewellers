@@ -250,7 +250,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         ),
         backgroundColor: Colors.grey[300],
         title: Text(
-          widget.categories,
+          '${widget.title}->${widget.categories}',
           style: GoogleFonts.rowdies(
             textStyle: const TextStyle(
               color: Colors.black,
@@ -391,6 +391,10 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                           width: 1.5, // Set the border width
                         )
                       : null, // No border for non-main images
+                  borderRadius: isMainImage
+                      ? BorderRadius.circular(
+                          1.5) // Set the border radius based on the border width
+                      : null, // No border radius for non-main images
                 ),
                 child: Card(
                   elevation: 4,

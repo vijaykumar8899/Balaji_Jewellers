@@ -209,8 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
             CustomCarouselSlider(),
             SizedBox(height: 25),
             Container(
-              height: 335,
-              child: GridView.count(
+height: MediaQuery.of(context).size.width * 0.90,              child: GridView.count(
                 crossAxisCount: 3,
                 mainAxisSpacing: 14,
                 crossAxisSpacing: 14,
@@ -305,24 +304,6 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
         .doc('Home_Slider')
         .collection('AllImages')
         .snapshots(); // Listen to changes in the collection
-  }
-
-  Future<List<String>> fetchImagesFromFirestore() async {
-    List<String> imageUrls = [];
-    final stream = getWishlistImagesStream();
-
-    try {
-      stream.listen((QuerySnapshot querySnapshot) {
-        imageUrls = querySnapshot.docs
-            .map((doc) =>
-                (doc.data() as Map<String, dynamic>)['imageUrl'] as String)
-            .toList();
-      });
-    } catch (e) {
-      print("Error fetching images from Firestore: $e");
-    }
-
-    return imageUrls;
   }
 
   @override

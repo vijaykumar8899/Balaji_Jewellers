@@ -22,11 +22,7 @@ class _TabsScreenState extends State<TabsScreen>
     setState(() {
       userPhoneNumber = prefs.getString('userPhoneNumber')!;
       userName = prefs.getString('userName')!;
-      print("$userPhoneNumber");
-      if (userName.isNotEmpty && userPhoneNumber.isNotEmpty) {
-        wishlistUserCollectionDocName = "${userName}_$userPhoneNumber";
-        print('tabsScreen : $wishlistUserCollectionDocName');
-      }
+      print("$userPhoneNumber $userName");
     });
   }
 
@@ -71,7 +67,7 @@ class _TabsScreenState extends State<TabsScreen>
             children: [
               HomeScreen(), // Displayed when currentIndex is 0
               WishlistScreen(
-                wishlistUserCollectionDocName: wishlistUserCollectionDocName,
+                userPhoneNumber: userPhoneNumber,
                 userName: userName,
               ), // Displayed when currentIndex is 1
             ],

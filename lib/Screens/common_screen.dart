@@ -5,7 +5,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jewellery/Screens/common_screen.dart';
 import 'package:logger/logger.dart';
 import 'package:photo_view/photo_view.dart';
 // import 'package:photo_view/photo_view_gallery.dart';
@@ -43,7 +42,6 @@ class CommonScreen extends StatefulWidget {
 
 class _CommonScreenState extends State<CommonScreen>
     with SingleTickerProviderStateMixin {
-  // final String mainFolder = 'Gold';
   static String selectedCategory = '';
   String generatedId = '';
   final firestore = FirebaseFirestore.instance;
@@ -88,7 +86,7 @@ class _CommonScreenState extends State<CommonScreen>
       userPhoneNumber = prefs.getString('userPhoneNumber');
       userName = prefs.getString('userName');
       print("$userPhoneNumber $userName $_Admin");
-      if (_Admin == 'Admin') {
+      if (_Admin == 'Admin' || _Admin == 'Admin2' || _Admin != null) {
         setState(() {
           isAdmin = true;
           print(isAdmin);
@@ -247,7 +245,7 @@ class _CommonScreenState extends State<CommonScreen>
 
     print(selectedCategory);
     final storageRef = storage.ref().child(
-        '${widget.mainFolder}/${widget.title}/$selectedCategory/${widget.title + generatedId}');
+        '${widget.mainFolder}/${widget.title}/$selectedCategory/${widget.mainFolder + widget.title + selectedCategory + generatedId}');
     try {
       final uploadTask = storageRef.putFile(File(imageUrls));
       await uploadTask.whenComplete(() async {
@@ -343,8 +341,7 @@ class _CommonScreenState extends State<CommonScreen>
       }
 
       if (imageFiles.isNotEmpty) {
-        Share.shareFiles(imageFiles,
-            text: 'Sharing ${selectedImages.length} images');
+        Share.shareFiles(imageFiles);
       } else {
         // Handle the case when no images could be downloaded.
         print('No images to share.');
@@ -391,8 +388,7 @@ class _CommonScreenState extends State<CommonScreen>
           imageFiles.add(filePath);
         }
 
-        Share.shareFiles(imageFiles,
-            text: 'Sharing ${imageUrls.length} images');
+        Share.shareFiles(imageFiles);
       } else {
         Fluttertoast.showToast(
           msg: "No Images found in Database",
@@ -452,7 +448,7 @@ class _CommonScreenState extends State<CommonScreen>
       imageFiles.add(filePath);
     }
 
-    Share.shareFiles(imageFiles, text: 'Sharing ${imageUrls.length} images');
+    Share.shareFiles(imageFiles);
   }
 
   Future<void> showNumberInputDialog(BuildContext context, String name) async {
@@ -530,7 +526,7 @@ class _CommonScreenState extends State<CommonScreen>
       final firestore = FirebaseFirestore.instance;
       final collection = firestore
           .collection('Wishlist')
-          .doc('${userName}_$userPhoneNumber')
+          .doc(userPhoneNumber)
           .collection('Wishlist');
 
       final existingDoc = await collection
@@ -566,6 +562,58 @@ class _CommonScreenState extends State<CommonScreen>
     return imageUrls?.length ?? 0;
   }
 
+  void restoreFromRecycleBin() async {
+    final _mainCollection = firestore.collection('RecycleBin');
+    final recycleBinCollection =
+        _mainCollection.doc('RecycleBin').collection('RecycleBin');
+
+    for (final imageUrl in selectedImages) {
+      try {
+        final existingDoc = await recycleBinCollection
+            .where('imageUrl', isEqualTo: imageUrl)
+            .limit(1)
+            .get();
+        print('outside');
+        if (existingDoc.docs.isNotEmpty) {
+          print('inside');
+          print(existingDoc);
+          final docData = existingDoc.docs.first.data();
+          print('docData L: $docData');
+
+          final mainFolder = docData['mainFolder'] as String;
+          final title = docData['title'] as String;
+          final category = docData['catagory'] as String;
+          print('data from doc : $mainFolder $title $category');
+
+          final mainCollection = firestore.collection(mainFolder);
+          final collection = mainCollection.doc(title).collection(category);
+
+          // Move the item back to the original collection
+          await collection.add(docData);
+          await recycleBinCollection.doc(existingDoc.docs.first.id).delete();
+
+          // You can add any additional logic here, such as updating the UI.
+          // For example, if you have a list of deleted items, remove the restored item from that list.
+        } else {
+          print('Error Restoring item from Recycle Bin: Item not found');
+        }
+      } catch (e) {
+        print('Error Restoring item from Recycle Bin: $e');
+      }
+    }
+    setState(() {
+      _loadImagesForCategory(selectedCategory);
+    });
+    Fluttertoast.showToast(
+      msg: "Images Restored Successfully!",
+      toastLength: Toast.LENGTH_SHORT, // Duration for the toast message
+      gravity: ToastGravity.BOTTOM, // Position of the toast message
+      backgroundColor: Colors.red, // Background color of the toast
+      textColor: Colors.white, // Text color of the toast
+      fontSize: 16.0, // Font size of the toast text
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -591,21 +639,33 @@ class _CommonScreenState extends State<CommonScreen>
             ),
           ),
           actions: [
-            if (isSelectionMode) ...[
-              IconButton(
-                onPressed: () async {
+            IconButton(
+              onPressed: () async {
+                if (isSelectionMode) {
                   setState(() {
                     isLoading = true;
                   });
                   _shareSelectedImages();
-                },
-                icon: const Icon(
-                  Icons.share,
-                  color: Colors.blue,
-                  size: 30,
-                ),
+                } else {
+                  Fluttertoast.showToast(
+                    msg: "Oops!, No Image Seleted to Share",
+                    toastLength:
+                        Toast.LENGTH_SHORT, // Duration for the toast message
+                    gravity:
+                        ToastGravity.BOTTOM, // Position of the toast message
+                    backgroundColor:
+                        Colors.red, // Background color of the toast
+                    textColor: Colors.white, // Text color of the toast
+                    fontSize: 16.0, // Font size of the toast text
+                  );
+                }
+              },
+              icon: const Icon(
+                Icons.share,
+                color: Colors.blue,
+                size: 30,
               ),
-            ],
+            ),
             if (isAdmin) ...[
               PopupMenuButton<String>(
                 elevation: 3,
@@ -679,6 +739,79 @@ class _CommonScreenState extends State<CommonScreen>
                         ),
                       ),
                     ),
+                    if (_Admin == 'Admin') ...[
+                      PopupMenuItem<String>(
+                        value: 'Recycle Bin',
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const CommonScreen(
+                                  title: 'RecycleBin',
+                                  categories: [
+                                    'RecycleBin'
+                                  ], // Wrap it in a list
+                                  mainFolder: 'RecycleBin',
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.dumpster,
+                                  color: Colors.red,
+                                  size: 24,
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  'Recycle Bin',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (widget.mainFolder == 'RecycleBin') ...[
+                        PopupMenuItem<String>(
+                          value: 'Restore Images',
+                          child: InkWell(
+                            onTap: () {
+                              restoreFromRecycleBin();
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.recycle,
+                                    color: Colors.green,
+                                    size: 24,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Restore Images',
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ];
                 },
                 icon: const Icon(
@@ -820,6 +953,12 @@ class _CommonScreenState extends State<CommonScreen>
   }
 
   Widget buildGridView(List<DocumentReference<Object?>> imageUrls) {
+    int _itemCount = isAdmin
+        ? imageUrls.length
+        : imageUrls.length <= 50
+            ? imageUrls.length
+            : 50;
+
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -827,7 +966,7 @@ class _CommonScreenState extends State<CommonScreen>
         crossAxisSpacing: 3,
         mainAxisExtent: 270,
       ),
-      itemCount: imageUrls.length,
+      itemCount: _itemCount,
       itemBuilder: (BuildContext context, index) {
         final documentReference = imageUrls[index];
 
@@ -995,10 +1134,13 @@ class _CommonScreenState extends State<CommonScreen>
 
   void showDeleteConfirmationDialog() {
     final firestore = FirebaseFirestore.instance;
-    final collection = firestore
-        .collection(widget.mainFolder)
-        .doc(widget.title)
-        .collection(selectedCategory);
+    final mainCollection = firestore.collection(widget.mainFolder);
+    final collection =
+        mainCollection.doc(widget.title).collection(selectedCategory);
+
+    final _mainCollection = firestore.collection('RecycleBin');
+    final recycleBinCollection =
+        _mainCollection.doc('RecycleBin').collection('RecycleBin');
 
     showDialog(
       context: context,
@@ -1011,7 +1153,7 @@ class _CommonScreenState extends State<CommonScreen>
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
-                // Implement delete logic here
+                // Implement move to recycle bin logic here
                 for (var imageUrl in selectedImages) {
                   try {
                     final existingDoc = await collection
@@ -1020,7 +1162,9 @@ class _CommonScreenState extends State<CommonScreen>
                         .get();
 
                     if (existingDoc.docs.isNotEmpty) {
-                      // Item exists in the wishlist, remove it
+                      // Move the item to the recycle bin
+                      await recycleBinCollection
+                          .add(existingDoc.docs.first.data());
                       await collection.doc(existingDoc.docs.first.id).delete();
                       imageUrlCache
                           .remove(existingDoc.docs.first.reference.path);
@@ -1028,10 +1172,10 @@ class _CommonScreenState extends State<CommonScreen>
                         imageUrlCache;
                       });
                     } else {
-                      print('Error  Deleting images: ');
+                      print('Error Moving images to Recycle Bin: ');
                     }
                   } catch (e) {
-                    print('Error Deleting images: $e');
+                    print('Error Moving images to Recycle Bin: $e');
                   }
                 }
               },
@@ -1077,7 +1221,7 @@ class _CommonScreenState extends State<CommonScreen>
           try {
             final querySnapshot = await FirebaseFirestore.instance
                 .collection('Wishlist')
-                .doc('${userName}_$userPhoneNumber')
+                .doc(userPhoneNumber)
                 .collection('Wishlist')
                 .where('imageUrl', isEqualTo: imageUrl)
                 .get();

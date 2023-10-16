@@ -1,6 +1,7 @@
 // UserDetailsScreen
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -29,7 +30,9 @@ class _userDetailsScreenState extends State<userDetailsScreen> {
   Future<void> saveUserDataToFirestoreAndSharedPreferences() async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      tempName = _userNameCtrl.text;
+      String? pushNotificationToken =
+          await FirebaseMessaging.instance.getToken();
+      print(pushNotificationToken);
 
       await firestore.collection('users').add({
         'userPhoneNumber': widget.userPhoneNumber_,
@@ -37,6 +40,7 @@ class _userDetailsScreenState extends State<userDetailsScreen> {
         'userEmail': _userEmailCtrl.text,
         'userCity': _userCityCtrl.text,
         'Admin': '',
+        'notificationtoken': pushNotificationToken,
         'TimeStamp': Timestamp.now(),
       });
 

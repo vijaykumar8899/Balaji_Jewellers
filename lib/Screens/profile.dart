@@ -330,47 +330,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
               elevation: 5, // Add elevation for a card-like appearance
               margin: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10.0),
               child: ProfileMenuWidget(
-                  title: 'Developers',
-                  icon: Icons.developer_mode,
-                  onPress: () {}),
-            ),
-            Card(
-              elevation: 5, // Add elevation for a card-like appearance
-              margin: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10.0),
-              child: ProfileMenuWidget(
-                title: 'Logout',
-                icon: Icons.logout,
-                textColor: Colors.red,
-                endIcon: false,
+                title: 'Developers',
+                icon: Icons.developer_mode,
                 onPress: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('LOGOUT'),
-                      content: const Text('Are you sure you want to logout?'),
-                      actions: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            // Logout();
-
-                            // Perform logout logic here
-                          },
-                          style: ElevatedButton.styleFrom(primary: Colors.red),
-                          child: const Text('Yes'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('No'),
-                        ),
-                      ],
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return Scaffold(
+                          appBar: AppBar(
+                            backgroundColor:
+                                Colors.grey[300], // Change to grey[300]
+                            elevation: 0,
+                            title: Text(
+                              'Developers Details',
+                              style: GoogleFonts.rowdies(
+                                // Use your desired Google Font, e.g., 'lobster'
+                                textStyle: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            centerTitle: true,
+                            leading: BackButton(
+                              color: Colors.black,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          body: DevelopersSection(),
+                        );
+                      },
                     ),
                   );
                 },
               ),
             ),
+            if (isAdmin) ...[
+              Card(
+                elevation: 5, // Add elevation for a card-like appearance
+                margin: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10.0),
+                child: ProfileMenuWidget(
+                  title: 'Recycle Bin',
+                  icon: FontAwesomeIcons.dumpster,
+                  textColor: Colors.red,
+                  endIcon: false,
+                  onPress: () {
+                    Get.to(const CommonScreen(
+                      title: 'RecycleBin',
+                      categories: ['RecycleBin'],
+                      mainFolder: 'RecycleBin',
+                    ));
+                  },
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -431,6 +447,90 @@ class ProfileMenuWidget extends StatelessWidget {
                   size: 18.0, color: Colors.grey),
             )
           : null,
+    );
+  }
+}
+
+class DevelopersSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        height: 400,
+        width: 400,
+        margin: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.orangeAccent,
+          border: Border.all(
+            color: Colors.black,
+            width: 2.0,
+          ),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+            crossAxisAlignment:
+                CrossAxisAlignment.center, // Center horizontally
+            children: [
+              DeveloperInfo(
+                name: 'Vijay Kumar Vellanki',
+                email: 'thvtechnosolutions@gmail.com',
+                phone: '9150987651',
+              ),
+              SizedBox(height: 16.0),
+              DeveloperInfo(
+                name: 'Tharun Rachabanti',
+                email: 'thvtechnosolutions@gmail.com',
+                phone: '9347644178',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DeveloperInfo extends StatelessWidget {
+  final String name;
+  final String email;
+  final String phone;
+
+  DeveloperInfo({
+    required this.name,
+    required this.email,
+    required this.phone,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.black,
+          width: 1.0,
+        ),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+          crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
+          children: [
+            Text(
+              'Name: $name',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text('Email: $email'),
+            Text('Phone: $phone'),
+          ],
+        ),
+      ),
     );
   }
 }
