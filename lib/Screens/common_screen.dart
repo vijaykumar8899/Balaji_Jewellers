@@ -349,6 +349,8 @@ class _CommonScreenState extends State<CommonScreen>
     }
     setState(() {
       isLoading = false;
+      selectedImages.clear();
+      isSelectionMode = false;
     });
   }
 
@@ -562,10 +564,10 @@ class _CommonScreenState extends State<CommonScreen>
     return imageUrls?.length ?? 0;
   }
 
-  void restoreFromRecycleBin() async {
-    final _mainCollection = firestore.collection('RecycleBin');
+  Future<void>? restoreFromRecycleBin() async {
+    final recyclemainCollection = firestore.collection('RecycleBin');
     final recycleBinCollection =
-        _mainCollection.doc('RecycleBin').collection('RecycleBin');
+        recyclemainCollection.doc('RecycleBin').collection('RecycleBin');
 
     for (final imageUrl in selectedImages) {
       try {
@@ -603,6 +605,7 @@ class _CommonScreenState extends State<CommonScreen>
     }
     setState(() {
       _loadImagesForCategory(selectedCategory);
+      isLoading = false;
     });
     Fluttertoast.showToast(
       msg: "Images Restored Successfully!",
@@ -648,7 +651,7 @@ class _CommonScreenState extends State<CommonScreen>
                   _shareSelectedImages();
                 } else {
                   Fluttertoast.showToast(
-                    msg: "Oops!, No Image Seleted to Share",
+                    msg: "Oops, No image selected to share",
                     toastLength:
                         Toast.LENGTH_SHORT, // Duration for the toast message
                     gravity:
@@ -661,8 +664,8 @@ class _CommonScreenState extends State<CommonScreen>
                 }
               },
               icon: const Icon(
-                Icons.share,
-                color: Colors.blue,
+                FontAwesomeIcons.share,
+                color: Colors.green,
                 size: 30,
               ),
             ),
@@ -740,52 +743,57 @@ class _CommonScreenState extends State<CommonScreen>
                       ),
                     ),
                     if (_Admin == 'Admin') ...[
-                      PopupMenuItem<String>(
-                        value: 'Recycle Bin',
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const CommonScreen(
-                                  title: 'RecycleBin',
-                                  categories: [
-                                    'RecycleBin'
-                                  ], // Wrap it in a list
-                                  mainFolder: 'RecycleBin',
-                                ),
-                              ),
-                            );
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  FontAwesomeIcons.dumpster,
-                                  color: Colors.red,
-                                  size: 24,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'Recycle Bin',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                      if (widget.mainFolder != 'RecycleBin') ...[
+                        PopupMenuItem<String>(
+                          value: 'Recycle Bin',
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const CommonScreen(
+                                    title: 'RecycleBin',
+                                    categories: [
+                                      'RecycleBin'
+                                    ], // Wrap it in a list
+                                    mainFolder: 'RecycleBin',
                                   ),
                                 ),
-                              ],
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.dumpster,
+                                    color: Colors.red,
+                                    size: 24,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Recycle Bin',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                       if (widget.mainFolder == 'RecycleBin') ...[
                         PopupMenuItem<String>(
                           value: 'Restore Images',
                           child: InkWell(
-                            onTap: () {
-                              restoreFromRecycleBin();
+                            onTap: () async {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              await restoreFromRecycleBin();
                             },
                             child: const Padding(
                               padding: EdgeInsets.all(8.0),
@@ -1132,15 +1140,18 @@ class _CommonScreenState extends State<CommonScreen>
     );
   }
 
-  void showDeleteConfirmationDialog() {
+  Future<void>? showDeleteConfirmationDialog() {
     final firestore = FirebaseFirestore.instance;
     final mainCollection = firestore.collection(widget.mainFolder);
     final collection =
         mainCollection.doc(widget.title).collection(selectedCategory);
 
-    final _mainCollection = firestore.collection('RecycleBin');
+    final recyclemainCollection = firestore.collection('RecycleBin');
     final recycleBinCollection =
-        _mainCollection.doc('RecycleBin').collection('RecycleBin');
+        recyclemainCollection.doc('RecycleBin').collection('RecycleBin');
+
+    final imagesToRemove = selectedImages
+        .toList(); // Making a copy of selectedImages for efficency
 
     showDialog(
       context: context,
@@ -1154,7 +1165,7 @@ class _CommonScreenState extends State<CommonScreen>
               onPressed: () async {
                 Navigator.of(context).pop();
                 // Implement move to recycle bin logic here
-                for (var imageUrl in selectedImages) {
+                for (var imageUrl in imagesToRemove) {
                   try {
                     final existingDoc = await collection
                         .where('imageUrl', isEqualTo: imageUrl)
@@ -1163,14 +1174,13 @@ class _CommonScreenState extends State<CommonScreen>
 
                     if (existingDoc.docs.isNotEmpty) {
                       // Move the item to the recycle bin
-                      await recycleBinCollection
-                          .add(existingDoc.docs.first.data());
+                      if (widget.mainFolder != 'RecycleBin') {
+                        await recycleBinCollection
+                            .add(existingDoc.docs.first.data());
+                      }
                       await collection.doc(existingDoc.docs.first.id).delete();
                       imageUrlCache
                           .remove(existingDoc.docs.first.reference.path);
-                      setState(() {
-                        imageUrlCache;
-                      });
                     } else {
                       print('Error Moving images to Recycle Bin: ');
                     }
@@ -1178,6 +1188,19 @@ class _CommonScreenState extends State<CommonScreen>
                     print('Error Moving images to Recycle Bin: $e');
                   }
                 }
+                setState(() {
+                  imageUrlCache;
+                  isLoading = false;
+                });
+                Fluttertoast.showToast(
+                  msg: "Images Deleted Successfully!",
+                  toastLength:
+                      Toast.LENGTH_SHORT, // Duration for the toast message
+                  gravity: ToastGravity.BOTTOM, // Position of the toast message
+                  backgroundColor: Colors.red, // Background color of the toast
+                  textColor: Colors.white, // Text color of the toast
+                  fontSize: 16.0, // Font size of the toast text
+                );
               },
               child: const Text('Delete'),
             ),
@@ -1191,13 +1214,7 @@ class _CommonScreenState extends State<CommonScreen>
         );
       },
     );
-  }
-
-  void shareSelectedItems() {
-    // Implement sharing logic here
-    final List<String> selectedimageUrls =
-        selectedItems.map((item) => item.imageUrls).toList();
-    // Implement the logic to share selectedimageUrls with other apps (e.g., WhatsApp).
+    return null;
   }
 
   Future<Map<String, dynamic>> _getImageUrlFromReference(
