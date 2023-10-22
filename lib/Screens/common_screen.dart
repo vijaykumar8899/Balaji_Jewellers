@@ -504,8 +504,12 @@ class _CommonScreenState extends State<CommonScreen>
                       // Handle invalid input or null case
                     }
                     break;
-                  case "Enter Wathsapp Number":
+
+                  case "Enter New Weight":
                     if (InputNumber != null) {
+                      String formattedWeight = InputNumber!.toStringAsFixed(3);
+
+                      _editWeight(formattedWeight);
                     } else {
                       // Handle invalid input or null case
                     }
@@ -617,6 +621,50 @@ class _CommonScreenState extends State<CommonScreen>
     );
   }
 
+  void _editWeight(String newWeight) async {
+    final _collection = firestore.collection(widget.mainFolder);
+    final _path = _collection.doc(widget.title).collection(selectedCategory);
+
+    for (final imageUrl in selectedImages) {
+      try {
+        final existingDoc =
+            await _path.where('imageUrl', isEqualTo: imageUrl).limit(1).get();
+
+        if (existingDoc.docs.isNotEmpty) {
+          final docData = existingDoc.docs.first.data();
+          final oldWeight = docData['weight'] as String;
+          print('oldWeight : $oldWeight');
+
+          _path
+              .doc(existingDoc.docs.first.id)
+              .set({'weight': newWeight}, SetOptions(merge: true));
+          setState(() {
+            _loadImagesForCategory(selectedCategory);
+            isSelectionMode = false;
+            selectedImages.clear();
+          });
+        }
+        Fluttertoast.showToast(
+          msg: "Weight edited successfully",
+          toastLength: Toast.LENGTH_SHORT, // Duration for the toast message
+          gravity: ToastGravity.BOTTOM, // Position of the toast message
+          backgroundColor: Colors.red, // Background color of the toast
+          textColor: Colors.white, // Text color of the toast
+          fontSize: 16.0, // Font size of the toast text
+        );
+      } catch (e) {
+        Fluttertoast.showToast(
+          msg: e.toString(),
+          toastLength: Toast.LENGTH_SHORT, // Duration for the toast message
+          gravity: ToastGravity.BOTTOM, // Position of the toast message
+          backgroundColor: Colors.red, // Background color of the toast
+          textColor: Colors.white, // Text color of the toast
+          fontSize: 16.0, // Font size of the toast text
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -669,6 +717,33 @@ class _CommonScreenState extends State<CommonScreen>
                 size: 30,
               ),
             ),
+            if (_Admin == 'Admin') ...[
+              if (isSelectionMode) ...[
+                IconButton(
+                  onPressed: () async {
+                    if (selectedImages.length > 1) {
+                      Fluttertoast.showToast(
+                        msg: "Please select only one image to edit the weight",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                    } else if (selectedImages.length == 1) {
+                      showNumberInputDialog(context, "Enter New Weight");
+                    } else {
+                      print('error');
+                    }
+                  },
+                  icon: const Icon(
+                    FontAwesomeIcons.penToSquare,
+                    color: Colors.green,
+                    size: 30,
+                  ),
+                ),
+              ],
+            ],
             if (isAdmin) ...[
               PopupMenuButton<String>(
                 elevation: 3,

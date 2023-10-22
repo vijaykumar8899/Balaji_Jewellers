@@ -47,7 +47,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
   void initState() {
     super.initState();
     _loadImagesForCategory();
+    print('wishlist ${widget.userPhoneNumber}');
   }
+  
 
   Stream<QuerySnapshot> getWishlistImagesStream() {
     return FirebaseFirestore.instance
@@ -59,7 +61,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
 
   void _loadImagesForCategory() {
     final stream = getWishlistImagesStream();
-
+    print('wishlist ${widget.userPhoneNumber}');
     stream.listen((QuerySnapshot querySnapshot) {
       // This code will be executed whenever there's a change in the Firestore collection.
       final List<DocumentReference> refs = querySnapshot.docs
