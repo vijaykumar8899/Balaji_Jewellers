@@ -60,11 +60,13 @@ class _CommonScreenState extends State<CommonScreen>
   List<String> isInWishlist = [];
   bool isLoading = false;
   var logger = Logger();
+  bool ifMove = false;
 
   String? _Admin;
   String? userPhoneNumber;
   String? userName;
   bool isAdmin = false;
+  String? isMove = '';
 
   @override
   void initState() {
@@ -85,14 +87,20 @@ class _CommonScreenState extends State<CommonScreen>
       _Admin = prefs.getString('Admin');
       userPhoneNumber = prefs.getString('userPhoneNumber');
       userName = prefs.getString('userName');
+      isMove = prefs.getString('isMove');
+
       print("$userPhoneNumber $userName $_Admin");
       if (_Admin == 'Admin' || _Admin == 'Admin2' || _Admin != null) {
         setState(() {
           isAdmin = true;
           print(isAdmin);
         });
-      } else {
-        print("no");
+      }
+
+      if (isMove == 'true') {
+        setState(() {
+          ifMove = true;
+        });
       }
     });
   }
@@ -588,18 +596,15 @@ class _CommonScreenState extends State<CommonScreen>
 
           final mainFolder = docData['mainFolder'] as String;
           final title = docData['title'] as String;
-          final category = docData['catagory'] as String;
-          print('data from doc : $mainFolder $title $category');
+          final catagory = docData['catagory'] as String;
+          print('data from doc : $mainFolder $title $catagory');
 
           final mainCollection = firestore.collection(mainFolder);
-          final collection = mainCollection.doc(title).collection(category);
+          final collection = mainCollection.doc(title).collection(catagory);
 
           // Move the item back to the original collection
           await collection.add(docData);
           await recycleBinCollection.doc(existingDoc.docs.first.id).delete();
-
-          // You can add any additional logic here, such as updating the UI.
-          // For example, if you have a list of deleted items, remove the restored item from that list.
         } else {
           print('Error Restoring item from Recycle Bin: Item not found');
         }
@@ -665,6 +670,61 @@ class _CommonScreenState extends State<CommonScreen>
     }
   }
 
+  void _moveImagesToOtherCategory() async {
+    final collection_ = FirebaseFirestore.instance.collection('tempCollection');
+    final path_ =
+        collection_.doc('tempCollection').collection('tempCollection');
+
+    final newCollection_ = firestore.collection(widget.mainFolder);
+    final newpath_ =
+        newCollection_.doc(widget.title).collection(selectedCategory);
+
+    final documents = await path_.get();
+
+    for (final document in documents.docs) {
+      try {
+        final documentData = document.data();
+        final docId = document.id;
+        print('document Data : $documentData');
+        // Update the fields in the document
+        await path_.doc(docId).set(
+          {
+            'mainFolder': widget.mainFolder,
+            'title': widget.title,
+            'catagory': selectedCategory
+          },
+        );
+
+// Verify the updated data
+        final updatedDocument = await path_.doc(docId).get();
+        final updatedDocumentData = updatedDocument.data();
+        print('Updated document data: $updatedDocumentData');
+
+        // Delete the document from the original location
+        await path_.doc(docId).delete();
+        print('Deleted document with ID: $docId');
+
+        // Add the updated document to the new location
+        await newpath_.doc(docId).set(documentData);
+        print('Added document to new location with ID: $docId');
+      } catch (e) {
+        print('Error updating or moving document: $e');
+      }
+      setState(() {
+        _loadImagesForCategory(selectedCategory);
+        isLoading = false;
+      });
+      Fluttertoast.showToast(
+        msg: "Images Moved Successfully!",
+        toastLength: Toast.LENGTH_SHORT, // Duration for the toast message
+        gravity: ToastGravity.BOTTOM, // Position of the toast message
+        backgroundColor: Colors.red, // Background color of the toast
+        textColor: Colors.white, // Text color of the toast
+        fontSize: 16.0, // Font size of the toast text
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -723,7 +783,8 @@ class _CommonScreenState extends State<CommonScreen>
                   onPressed: () async {
                     if (selectedImages.length > 1) {
                       Fluttertoast.showToast(
-                        msg: "Please select only one image to edit the weight",
+                        msg:
+                            "You selected ${selectedImages.length} images. Please select only 1 image to edit the weight",
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM,
                         backgroundColor: Colors.red,
@@ -754,69 +815,106 @@ class _CommonScreenState extends State<CommonScreen>
                 itemBuilder: (BuildContext context) {
                   return <PopupMenuEntry<String>>[
                     // Include your PopupMenuItems here
-                    PopupMenuItem<String>(
-                      value: 'custom_share',
-                      child: InkWell(
-                        onTap: () {
-                          // Handle Custom Share option
-                          setState(() {
-                            isLoading = true;
-                          });
-                          showNumberInputDialog(context, "Enter Number");
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.link,
-                                color: Colors.green,
-                                size: 24,
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                'Custom Share',
-                                style: TextStyle(
+                    if (widget.mainFolder != 'RecycleBin') ...[
+                      PopupMenuItem<String>(
+                        value: 'custom_share',
+                        child: InkWell(
+                          onTap: () {
+                            // Handle Custom Share option
+                            setState(() {
+                              isLoading = true;
+                            });
+                            showNumberInputDialog(context, "Enter Number");
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.link,
                                   color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                  size: 24,
                                 ),
-                              ),
-                            ],
+                                SizedBox(width: 10),
+                                Text(
+                                  'Custom Share',
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'delete',
-                      child: InkWell(
-                        onTap: () {
-                          // Handle Delete option
-                          showDeleteConfirmationDialog();
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.delete,
-                                color: Colors.red,
-                                size: 24,
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                'Delete',
-                                style: TextStyle(
+                      PopupMenuItem<String>(
+                        value: 'delete',
+                        child: InkWell(
+                          onTap: () {
+                            // Handle Delete option
+
+                            showDeleteConfirmationDialog('RecycleBin',
+                                'RecycleBin', 'RecycleBin', 'Delete');
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.delete,
                                   color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                  size: 24,
                                 ),
-                              ),
-                            ],
+                                SizedBox(width: 10),
+                                Text(
+                                  'Delete',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                      PopupMenuItem<String>(
+                        value: 'Move',
+                        child: InkWell(
+                          onTap: () async {
+                            showDeleteConfirmationDialog('tempCollection',
+                                'tempCollection', 'tempCollection', 'Move');
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            await prefs.setString('isMove', 'true');
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.route,
+                                  color: Colors.red,
+                                  size: 24,
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  'Move',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                     if (_Admin == 'Admin') ...[
                       if (widget.mainFolder != 'RecycleBin') ...[
                         PopupMenuItem<String>(
@@ -989,6 +1087,17 @@ class _CommonScreenState extends State<CommonScreen>
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              ifMove
+                  ? FloatingActionButton(
+                      onPressed: () async {
+                        _moveImagesToOtherCategory();
+                      },
+                      child: const Icon(FontAwesomeIcons.paste),
+                    )
+                  : const SizedBox(),
+              const SizedBox(
+                height: 16,
+              ),
               FloatingActionButton(
                 backgroundColor: Colors.white,
                 onPressed: () {
@@ -1215,15 +1324,16 @@ class _CommonScreenState extends State<CommonScreen>
     );
   }
 
-  Future<void>? showDeleteConfirmationDialog() {
+  Future<void>? showDeleteConfirmationDialog(
+      String main, String title, String catagory, String name) {
     final firestore = FirebaseFirestore.instance;
     final mainCollection = firestore.collection(widget.mainFolder);
     final collection =
         mainCollection.doc(widget.title).collection(selectedCategory);
 
-    final recyclemainCollection = firestore.collection('RecycleBin');
+    final recyclemainCollection = firestore.collection(main);
     final recycleBinCollection =
-        recyclemainCollection.doc('RecycleBin').collection('RecycleBin');
+        recyclemainCollection.doc(title).collection(catagory);
 
     final imagesToRemove = selectedImages
         .toList(); // Making a copy of selectedImages for efficency
@@ -1232,9 +1342,8 @@ class _CommonScreenState extends State<CommonScreen>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Selected Items?'),
-          content:
-              const Text('Are you sure you want to delete the selected items?'),
+          title: Text('$name Selected Items?'),
+          content: Text('Are you sure you want to $name the selected items?'),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
@@ -1268,7 +1377,7 @@ class _CommonScreenState extends State<CommonScreen>
                   isLoading = false;
                 });
                 Fluttertoast.showToast(
-                  msg: "Images Deleted Successfully!",
+                  msg: "Images $name Successfully!",
                   toastLength:
                       Toast.LENGTH_SHORT, // Duration for the toast message
                   gravity: ToastGravity.BOTTOM, // Position of the toast message
@@ -1277,7 +1386,7 @@ class _CommonScreenState extends State<CommonScreen>
                   fontSize: 16.0, // Font size of the toast text
                 );
               },
-              child: const Text('Delete'),
+              child: Text(name),
             ),
             TextButton(
               onPressed: () {
